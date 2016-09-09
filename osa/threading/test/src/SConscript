@@ -1,0 +1,22 @@
+Import('env')
+
+src_testlib = [
+  'tcase_osthreading_condition.c',
+  'tcase_osthreading_mutex.c',
+  'tcase_osthreading_thread.c',
+  'test_osthreading_helper.c',
+]
+
+env.Lib('osthreading-tests', src_testlib)
+
+libs = [
+	'osthreading-tests',
+	'osthreadingintf', 'osthreading',
+
+  'osmemintf', 'osmem',
+]
+
+tests =  env.App('osthreading-tests', 'test_osthreading.c', LIBS=[ libs ])
+
+env.Alias('unittests', tests)
+env.Alias('osthreadingtests', tests)

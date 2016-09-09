@@ -1,0 +1,17 @@
+Import('env')
+
+src_intf = [
+  'osthreadingIntf.c',
+]
+
+src_lib = [
+  'osthreading_condition.c',
+  'osthreading_mutex.c',
+  'osthreading_thread.c',
+]
+
+intf = env.Lib('osthreadingintf', src_intf)
+lib = env.Lib('osthreading', src_lib, CCFLAGS=['-pthread'])
+
+env.Alias('osthreading', [ intf, lib ])
+env.Alias('osa', [ intf, lib ])

@@ -1,0 +1,16 @@
+Import('env')
+
+src_intf = [
+  'osnetIntf.c',
+]
+
+src_lib = [
+  'osnet.c',
+  'osnet_socket.c',
+]
+
+intf = env.Lib('osnetintf', src_intf)
+lib = env.Lib('osnet', src_lib)
+
+env.Alias('osnet', [ intf, lib ])
+env.Alias('osa', [ intf, lib ])

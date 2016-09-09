@@ -1,0 +1,23 @@
+Import('env')
+
+src_testlib = [
+  'tcase_eventbus_event.c',
+  'tcase_eventbus_bus.c',
+  'test_eventbus_helper.c',
+]
+
+env.Lib('eventbus-tests', src_testlib)
+
+libs = [
+	'eventbus-tests',
+	'eventbusintf', 'eventbus',
+
+  'osmemintf','osmem',
+  'osthreadingintf', 'osthreading',
+  'listintf', 'list',
+]
+
+tests =  env.App('eventbus-tests', 'test_eventbus.c', LIBS=[ libs ])
+
+env.Alias('unittests', tests)
+env.Alias('eventbustests', tests)

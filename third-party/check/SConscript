@@ -1,0 +1,25 @@
+Import('env')
+
+tarball = env.File('check-0.10.0.tar.gz')
+
+unpack_dir = env.Dir('.')
+
+include_dir = env.Dir('%s/check' %(env['INC_DIR']))
+
+target_incs = [
+	env.File('%s/check.h' %(include_dir.abspath)),
+	env.File('%s/check_stdint.h' %(include_dir.abspath)),
+]
+
+target_libs = [
+	env.File('%s/libcheck.so' %(env['LIB_DIR'])),
+]
+
+
+cmd = env.Command([ unpack_dir, target_incs, target_libs ], [ tarball ], [
+	Mkdir(unpack_dir.abspath),
+	'$TAR -xvf $SOURCE -C %s --strip-components=1' %(unpack_dir.abspath),
+	'cd %s ; ./configure --prefix=%s --disable-static --includedir=%s --libdir=%s && make install' %(unpack_dir.abspath, unpack_dir.abspath, include_dir.abspath, env['LIB_DIR']),
+	])
+
+env.Alias('check', cmd)

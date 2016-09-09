@@ -1,0 +1,13 @@
+Import('env')
+
+def doxygen_generator(target, source, env):
+  for file in source:
+    env.AlwaysBuild(env.Command([env.Dir("#/do/docs/%s" %file.name)],[file],
+    [
+      'doxygen ${SOURCE}'
+    ]))
+  return None
+
+doxygen = env.Command(env.Dir("#/do/docs/"),env.Glob("doxyfiles/*"),['mkdir -p ${TARGET}',doxygen_generator])
+
+env.Alias('documentation', env.AlwaysBuild(doxygen))

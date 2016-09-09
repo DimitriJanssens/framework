@@ -1,0 +1,15 @@
+Import('env')
+
+src_intf = [
+  'osutilsIntf.c',
+]
+
+src_lib = [
+  'osutils_sleep.c',
+]
+
+intf = env.Lib('osutilsintf', src_intf)
+lib = env.Lib('osutils', src_lib)
+
+env.Alias('osutils', [ intf, lib ])
+env.Alias('osa', [ intf, lib ])

@@ -1,0 +1,21 @@
+Import('env')
+
+src_testlib = [
+  'tcase_list_item.c',
+  'tcase_list_list.c',
+  'test_list_helper.c',
+]
+
+env.Lib('list-tests', src_testlib)
+
+libs = [
+	'list-tests',
+	'listintf', 'list',
+
+  'osmemintf','osmem',
+]
+
+tests =  env.App('list-tests', 'test_list.c', LIBS=[ libs ])
+
+env.Alias('unittests', tests)
+env.Alias('listtests', tests)

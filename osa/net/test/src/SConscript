@@ -1,0 +1,22 @@
+Import('env')
+
+src_testlib = [
+  'tcase_osnet_socket_can.c',
+  'tcase_osnet_socket_interface.c',
+  'tcase_osnet_socket_udp.c',
+  'test_osnet_helper.c',
+]
+
+env.Lib('osnet-tests', src_testlib)
+
+libs = [
+	'osnet-tests',
+	'osnetintf', 'osnet',
+
+  'osmemintf', 'osmem',
+]
+
+tests =  env.App('osnet-tests', 'test_osnet.c', LIBS=[ libs ])
+
+env.Alias('unittests', tests)
+env.Alias('osnettests', tests)

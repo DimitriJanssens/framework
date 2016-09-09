@@ -1,0 +1,84 @@
+#include <osa/osnetIntf.h>
+
+#include "osnet.h"
+
+static OsNetIntf_t intf =
+{
+  #ifndef UNITTESTS
+  .socket_index_for_interface = osnet_socket_index_for_interface,
+  .socket_create = osnet_socket_create,
+  .socket_fd = osnet_socket_fd,
+  .socket_bind = osnet_socket_bind,
+  .socket_send = osnet_socket_send,
+  .socket_sendto = osnet_socket_sendto,
+  .socket_recv = osnet_socket_recv,
+  .socket_recvfrom = osnet_socket_recvfrom,
+  .socket_destroy = osnet_socket_destroy,
+
+  .htonl = osnet_htonl,
+  .htons = osnet_htons,
+  .ntohl = osnet_ntohl,
+  .ntohs = osnet_ntohs,
+  #else
+  .socket_index_for_interface = NULL,
+  .socket_create = NULL,
+  .socket_fd = NULL,
+  .socket_bind = NULL,
+  .socket_send = NULL,
+  .socket_sendto = NULL,
+  .socket_recv = NULL,
+  .socket_recvfrom = NULL,
+  .socket_destroy = NULL,
+  
+  .htonl = NULL,
+  .htons = NULL,
+  .ntohl = NULL,
+  .ntohs = NULL,
+  #endif
+};
+
+OsNetIntf_t * getOsNetIntf(void)
+{
+  return &intf;
+}
+
+#ifdef UNITTESTS
+void setDefaultOsNetIntfForUnittests(void)
+{
+  OsNetIntf_t * intf = getOsNetIntf();
+
+  intf->socket_index_for_interface = osnet_socket_index_for_interface;
+  intf->socket_create = osnet_socket_create;
+  intf->socket_fd = osnet_socket_fd;
+  intf->socket_bind = osnet_socket_bind;
+  intf->socket_send = osnet_socket_send;
+  intf->socket_sendto = osnet_socket_sendto;
+  intf->socket_recv = osnet_socket_recv;
+  intf->socket_recvfrom = osnet_socket_recvfrom;
+  intf->socket_destroy = osnet_socket_destroy;
+
+  intf->htonl = osnet_htonl;
+  intf->htons = osnet_htons;
+  intf->ntohl = osnet_ntohl;
+  intf->ntohs = osnet_ntohs;
+}
+void resetDefaultOsNetIntfForUnittests(void)
+{
+  OsNetIntf_t * intf = getOsNetIntf();
+
+  intf->socket_index_for_interface = NULL;
+  intf->socket_create = NULL;
+  intf->socket_fd = NULL;
+  intf->socket_bind = NULL;
+  intf->socket_send = NULL;
+  intf->socket_sendto = NULL;
+  intf->socket_recv = NULL;
+  intf->socket_recvfrom = NULL;
+  intf->socket_destroy = NULL;
+
+  intf->htonl = NULL;
+  intf->htons = NULL;
+  intf->ntohl = NULL;
+  intf->ntohs = NULL;
+}
+#endif

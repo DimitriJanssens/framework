@@ -1,0 +1,9 @@
+Import('env')
+
+src_lib = [
+	'testframework.c',
+]
+
+lib = env.Lib('testframework', src_lib)
+
+env.Alias('testframework', [ lib ])

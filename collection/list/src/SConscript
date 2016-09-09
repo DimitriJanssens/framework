@@ -1,0 +1,15 @@
+Import('env')
+
+src_intf = [
+	'listIntf.c',
+]
+
+src_lib = [
+  'list_item.c',
+  'list_list.c',
+]
+
+intf = env.Lib('listintf', src_intf)
+lib = env.Lib('list', src_lib)
+
+env.Alias('list', [ intf, lib ])

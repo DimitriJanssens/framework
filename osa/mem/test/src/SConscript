@@ -1,0 +1,17 @@
+Import('env')
+
+src_testlib = [
+	'tcase_osmem.c',
+]
+
+env.Lib('osmem-tests', src_testlib)
+
+libs = [
+	'osmem-tests',
+	'osmemintf', 'osmem'
+]
+
+tests =  env.App('osmem-tests', 'test_osmem.c', LIBS=[ libs ])
+
+env.Alias('unittests', tests)
+env.Alias('osmemtests', tests)

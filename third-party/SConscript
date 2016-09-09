@@ -1,0 +1,7 @@
+Import('env')
+
+SUBDIRS = [
+	'check'
+]
+
+env.SConscript(dirs=SUBDIRS, name='SConscript', exports = 'env')

@@ -1,0 +1,15 @@
+Import('env')
+
+src_intf = [
+	'osmemIntf.c',
+]
+
+src_lib = [
+	'osmem_linux.c',
+]
+
+intf = env.Lib('osmemintf', src_intf)
+lib = env.Lib('osmem', src_lib)
+
+env.Alias('osmem', [ intf, lib ])
+env.Alias('osa', [ intf, lib ])

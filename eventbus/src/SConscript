@@ -1,0 +1,15 @@
+Import('env')
+
+src_intf = [
+	'eventbusIntf.c',
+]
+
+src_lib = [
+  'eventbus_bus.c',
+  'eventbus_event.c',
+]
+
+intf = env.Lib('eventbusintf', src_intf)
+lib = env.Lib('eventbus', src_lib)
+
+env.Alias('eventbus', [ intf, lib ])

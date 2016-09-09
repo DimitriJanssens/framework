@@ -1,0 +1,15 @@
+Import('env')
+
+src_intf = [
+  'canIntf.c',
+]
+
+src_lib = [
+  'can_socket.c',
+]
+
+intf = env.Lib('canintf', src_intf)
+lib = env.Lib('can', src_lib)
+
+env.Alias('can', [ intf, lib ])
+env.Alias('protocols', [ intf, lib ])
