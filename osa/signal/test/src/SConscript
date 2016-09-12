@@ -1,0 +1,20 @@
+Import('env')
+
+src_testlib = [
+  'tcase_ossignal.c',
+  'test_ossignal_helper.c',
+]
+
+env.Lib('ossignal-tests', src_testlib)
+
+libs = [
+	'ossignal-tests',
+	'ossignalintf', 'ossignal',
+
+  'osmemintf', 'osmem',
+]
+
+tests =  env.App('ossignal-tests', 'test_ossignal.c', LIBS=[ libs ])
+
+env.Alias('unittests', tests)
+env.Alias('ossignaltests', tests)
