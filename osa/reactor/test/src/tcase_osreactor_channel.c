@@ -5,13 +5,25 @@
 START_TEST(test_channel_NULL)
   const OsReactorIntf_t * const ri = getOsReactorIntf();
   OsReactorChannel_t * channel = (OsReactorChannel_t *) 0x12345;
-  OsNetSocket_t * socket = (OsNetSocket_t *) 0x12345;
   OsReactorChannelHandler_t handler = (OsReactorChannelHandler_t) 0x12345;
+
+  const OsNetIntf_t * const neti = getOsNetIntf();
+  OsNetSocket_t * socket;
 
   ck_assert(ri->channel_create(NULL, NULL, NULL, NULL) == STATUS_FAILURE);
   ck_assert(ri->channel_create(&channel, NULL, NULL, NULL) == STATUS_FAILURE);
+  
+  (void) neti->socket_create(OSNETSOCKETTYPE_UDP, &socket);
   ck_assert(ri->channel_create(NULL, socket, NULL, NULL) == STATUS_FAILURE);
+  
   ck_assert(ri->channel_create(NULL, NULL, handler, NULL) == STATUS_FAILURE);
+  ck_assert(ri->channel_create(&channel, NULL, handler, NULL) == STATUS_FAILURE);
+    
+  (void) neti->socket_create(OSNETSOCKETTYPE_UDP, &socket);
+  ck_assert(ri->channel_create(&channel, socket, NULL, NULL) == STATUS_FAILURE);
+    
+  (void) neti->socket_create(OSNETSOCKETTYPE_UDP, &socket);
+  ck_assert(ri->channel_create(NULL, socket, handler, NULL) == STATUS_FAILURE);
 
   ck_assert(ri->channel_get_socket(NULL) == NULL);
   ck_assert(ri->channel_get_userdata(NULL) == NULL);

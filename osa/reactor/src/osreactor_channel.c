@@ -13,7 +13,7 @@ Status_e osreactor_channel_create(OsReactorChannel_t ** channel, OsNetSocket_t *
 {
   Status_e rc = STATUS_FAILURE;
 
-  if((channel != NULL) && (handler != NULL))
+  if((channel != NULL) && (socket != NULL) && (handler != NULL))
   {
     const OsMemIntf_t * const memi = getOsMemIntf();
     *channel = (struct OsReactorChannel *) memi->malloc(sizeof(struct OsReactorChannel));
@@ -25,6 +25,11 @@ Status_e osreactor_channel_create(OsReactorChannel_t ** channel, OsNetSocket_t *
 
       rc = STATUS_SUCCESS;
     }
+  }
+
+  if((rc != STATUS_SUCCESS) && (socket != NULL))
+  {
+    (void) getOsNetIntf()->socket_destroy(socket);
   }
 
   return rc;
@@ -78,7 +83,7 @@ Status_e osreactor_channel_destroy(OsReactorChannel_t * channel)
     channel->userdata = NULL;
 
     const OsNetIntf_t * const neti = getOsNetIntf();
-    neti->socket_destroy(channel->socket);
+    (void) neti->socket_destroy(channel->socket);
     channel->socket = NULL;
 
     const OsMemIntf_t * const memi = getOsMemIntf();

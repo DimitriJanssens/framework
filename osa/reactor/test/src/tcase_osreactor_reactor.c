@@ -88,17 +88,17 @@ static OsReactorChannel_t * localCreateUdpChannel(void * userdata, size_t count)
   const OsNetIntf_t * const neti = getOsNetIntf();
   (void) neti->socket_create(OSNETSOCKETTYPE_UDP, &socket);
 
-  const OsReactorIntf_t * const ri = getOsReactorIntf();
-  ck_assert(ri->channel_create(&rc, socket, localUdpChannelHandler, userdata) == STATUS_SUCCESS);
-  
   struct sockaddr_in si_me;
   si_me.sin_family = AF_INET;
   si_me.sin_port = neti->htons(8888 + count);
   si_me.sin_addr.s_addr = neti->htonl(INADDR_ANY);
 
   ck_assert(neti->socket_bind(socket, &si_me, sizeof(si_me)) == STATUS_SUCCESS);
-  ck_assert(rc != NULL);
+  
+  const OsReactorIntf_t * const ri = getOsReactorIntf();
+  ck_assert(ri->channel_create(&rc, socket, localUdpChannelHandler, userdata) == STATUS_SUCCESS);
 
+  ck_assert(rc != NULL);
   return rc;
 }
 
@@ -124,7 +124,7 @@ START_TEST(test_reactor_udpchannel)
   si_me.sin_addr.s_addr = neti->htonl(INADDR_ANY);
 
   size_t send_buffer_size= BUFFERSIZE;
-  ck_assert(neti->socket_sendto(ri->channel_get_socket(channel), &send_buffer, &send_buffer_size, 0, &si_me, sizeof(si_me)) == STATUS_SUCCESS);
+  ck_assert(neti->socket_sendto(ri->channel_get_socket(channel), send_buffer, &send_buffer_size, 0, &si_me, sizeof(si_me)) == STATUS_SUCCESS);
   ck_assert(send_buffer_size == BUFFERSIZE);
 
   while(memi->memcmp(send_buffer, recv_buffer, BUFFERSIZE) != STATUS_SUCCESS);
@@ -132,7 +132,7 @@ START_TEST(test_reactor_udpchannel)
   localDestroyReactor(reactor);
 END_TEST
 
-#define CHANNELCOUNT  50
+#define CHANNELCOUNT  10
 
 START_TEST(test_reactor_udpchannels)
   const OsReactorIntf_t * const ri = getOsReactorIntf();
@@ -162,8 +162,8 @@ START_TEST(test_reactor_udpchannels)
     si_me.sin_port = neti->htons(8888 + i);
     si_me.sin_addr.s_addr = neti->htonl(INADDR_ANY);
 
-    size_t send_buffer_size= BUFFERSIZE;
-    ck_assert(neti->socket_sendto(ri->channel_get_socket(channels[i]), &send_buffer[i], &send_buffer_size, 0, &si_me, sizeof(si_me)) == STATUS_SUCCESS);
+    size_t send_buffer_size = BUFFERSIZE;
+    ck_assert(neti->socket_sendto(ri->channel_get_socket(channels[i]), send_buffer[i], &send_buffer_size, 0, &si_me, sizeof(si_me)) == STATUS_SUCCESS);
     ck_assert(send_buffer_size == BUFFERSIZE);
   }
 

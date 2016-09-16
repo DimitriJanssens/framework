@@ -48,6 +48,7 @@ typedef struct
   /*!
    * \brief Creates a new channel
    *
+   * Memory management of the socket is handed over to the channel.
    * Memory management of unregistered channels stays with the caller.
    */
   Status_e (*channel_create)(OsReactorChannel_t ** channel, OsNetSocket_t * socket, OsReactorChannelHandler_t handler, void * userdata);
