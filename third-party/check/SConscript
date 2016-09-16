@@ -4,22 +4,25 @@ tarball = env.File('check-0.10.0.tar.gz')
 
 unpack_dir = env.Dir('.')
 
-include_dir = env.Dir('%s/check' %(env['INC_DIR']))
+include_dir = env['INC_DIR'].Dir("check")
 
 target_incs = [
-	env.File('%s/check.h' %(include_dir.abspath)),
-	env.File('%s/check_stdint.h' %(include_dir.abspath)),
+	include_dir.File('check.h'),
+	include_dir.File('check_stdint.h'),
 ]
 
 target_libs = [
-	env.File('%s/libcheck.so' %(env['LIB_DIR'])),
+	env['LIB_DIR'].File('libcheck.so'),
 ]
 
 
-cmd = env.Command([ unpack_dir, target_incs, target_libs ], [ tarball ], [
-	Mkdir(unpack_dir.abspath),
-	'$TAR -xvf $SOURCE -C %s --strip-components=1' %(unpack_dir.abspath),
+cmd = env.Command([ target_incs, target_libs ], [ tarball ], [
+  Mkdir(unpack_dir),
+  '$TAR -xvf $SOURCE -C %s --strip-components=1' %(unpack_dir.path),
 	'cd %s ; ./configure --prefix=%s --disable-static --includedir=%s --libdir=%s && make install' %(unpack_dir.abspath, unpack_dir.abspath, include_dir.abspath, env['LIB_DIR']),
 	])
+
+# check will get unpacked in my do directory. Scons needs to know about this.
+env.SideEffect(unpack_dir.path , cmd)
 
 env.Alias('check', cmd)
