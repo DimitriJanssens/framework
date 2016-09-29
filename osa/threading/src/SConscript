@@ -11,7 +11,7 @@ src_lib = [
 ]
 
 intf = env.Lib('osthreadingintf', src_intf)
-lib = env.Lib('osthreading', src_lib, CCFLAGS=['-pthread'])
+lib = env.Lib('osthreading', src_lib, CCFLAGS=[ env['CCFLAGS'], '-pthread'])
 
 env.Alias('osthreading', [ intf, lib ])
 env.Alias('osa', [ intf, lib ])
