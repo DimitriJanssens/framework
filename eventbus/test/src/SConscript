@@ -8,13 +8,15 @@ src_testlib = [
 
 env.Lib('eventbus-tests', src_testlib)
 
+env.Lib('eventbusdefimpl', [ 'test_eventbus_defimpl.c' ])
+
 libs = [
 	'eventbus-tests',
-	'eventbusintf', 'eventbus',
+	'eventbusintf', 'eventbus', 'eventbusdefimpl',
 
-  'osmemintf','osmem',
-  'osthreadingintf', 'osthreading',
-  'listintf', 'list',
+  'osmemintf', 'osmem', 'osmemdefimpl',
+  'osthreadingintf', 'osthreading', 'osthreadingdefimpl',
+  'listintf', 'list', 'listdefimpl',
 ]
 
 tests =  env.App('eventbus-tests', 'test_eventbus.c', LIBS=[ libs ])

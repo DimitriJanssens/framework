@@ -7,11 +7,13 @@ src_testlib = [
 
 env.Lib('ossignal-tests', src_testlib)
 
+env.Lib('ossignaldefimpl', [ 'test_ossignal_defimpl.c' ])
+
 libs = [
 	'ossignal-tests',
-	'ossignalintf', 'ossignal',
+	'ossignalintf', 'ossignal', 'ossignaldefimpl',
 
-  'osmemintf', 'osmem',
+  'osmemintf', 'osmem', 'osmemdefimpl',
 ]
 
 tests =  env.App('ossignal-tests', 'test_ossignal.c', LIBS=[ libs ])

@@ -1,0 +1,18 @@
+Import('env')
+
+src_testlib = [
+]
+
+env.Lib('osutils-tests', src_testlib)
+
+env.Lib('osutilsdefimpl', [ 'test_osutils_defimpl.c' ])
+
+libs = [
+	'osutils-tests',
+	'osutilsintf', 'osutils', 'osutilsdefimpl',
+]
+
+tests =  env.App('osutils-tests', 'test_osutils.c', LIBS=[ libs ])
+
+env.Alias('unittests', tests)
+env.Alias('osutilstests', tests)

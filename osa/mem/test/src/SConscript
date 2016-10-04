@@ -6,9 +6,11 @@ src_testlib = [
 
 env.Lib('osmem-tests', src_testlib)
 
+env.Lib('osmemdefimpl', [ 'test_osmem_defimpl.c' ])
+
 libs = [
 	'osmem-tests',
-	'osmemintf', 'osmem'
+	'osmemintf', 'osmem', 'osmemdefimpl',
 ]
 
 tests =  env.App('osmem-tests', 'test_osmem.c', LIBS=[ libs ])

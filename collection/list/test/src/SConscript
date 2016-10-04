@@ -8,11 +8,13 @@ src_testlib = [
 
 env.Lib('list-tests', src_testlib)
 
+env.Lib('listdefimpl', [ 'test_list_defimpl.c' ])
+
 libs = [
 	'list-tests',
-	'listintf', 'list',
+	'listintf', 'list', 'listdefimpl',
 
-  'osmemintf','osmem',
+  'osmemintf','osmem', 'osmemdefimpl',
 ]
 
 tests =  env.App('list-tests', 'test_list.c', LIBS=[ libs ])

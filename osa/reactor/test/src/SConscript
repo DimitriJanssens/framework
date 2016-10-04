@@ -8,15 +8,17 @@ src_testlib = [
 
 env.Lib('osreactor-tests', src_testlib)
 
+env.Lib('osreactordefimpl', [ 'test_osreactor_defimpl.c' ])
+
 libs = [
 	'osreactor-tests',
-	'osreactorintf', 'osreactor',
+	'osreactorintf', 'osreactor', 'osreactordefimpl',
 
-  'osmemintf', 'osmem',
-  'osnetintf', 'osnet',
-  'osthreadingintf', 'osthreading',
+  'osmemintf', 'osmem', 'osmemdefimpl',
+  'osnetintf', 'osnet', 'osnetdefimpl',
+  'osthreadingintf', 'osthreading', 'osthreadingdefimpl',
 
-  'listintf', 'list',
+  'listintf', 'list', 'listdefimpl',
 ]
 
 tests =  env.App('osreactor-tests', 'test_osreactor.c', LIBS=[ libs ])

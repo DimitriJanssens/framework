@@ -9,11 +9,13 @@ src_testlib = [
 
 env.Lib('osthreading-tests', src_testlib)
 
+env.Lib('osthreadingdefimpl', [ 'test_osthreading_defimpl.c' ])
+
 libs = [
 	'osthreading-tests',
-	'osthreadingintf', 'osthreading',
+	'osthreadingintf', 'osthreading', 'osthreadingdefimpl',
 
-  'osmemintf', 'osmem',
+  'osmemintf', 'osmem', 'osmemdefimpl',
 ]
 
 tests =  env.App('osthreading-tests', 'test_osthreading.c', LIBS=[ libs ])

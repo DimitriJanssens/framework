@@ -19,21 +19,3 @@ OsUtilsIntf_t * getOsUtilsIntf(void)
 {
   return &intf;
 }
-
-#ifdef UNITTESTS
-void setDefaultOsUtilsIntfForUnittests(void)
-{
-  OsUtilsIntf_t * intf = getOsUtilsIntf();
-  intf->sleep_sec = osutils_sleep_sec;
-  intf->sleep_usec = osutils_sleep_usec;
-  intf->sleep_nsec = osutils_sleep_nsec;
-}
-
-void resetDefaultOsUtilsIntfForUnittests(void)
-{
-  OsUtilsIntf_t * intf = getOsUtilsIntf();
-  intf->sleep_sec = NULL;
-  intf->sleep_usec = NULL;
-  intf->sleep_nsec = NULL;
-}
-#endif

@@ -9,11 +9,13 @@ src_testlib = [
 
 env.Lib('osnet-tests', src_testlib)
 
+env.Lib('osnetdefimpl', [ 'test_osnet_defimpl.c' ])
+
 libs = [
 	'osnet-tests',
-	'osnetintf', 'osnet',
+	'osnetintf', 'osnet', 'osnetdefimpl',
 
-  'osmemintf', 'osmem',
+  'osmemintf', 'osmem', 'osmemdefimpl',
 ]
 
 tests =  env.App('osnet-tests', 'test_osnet.c', LIBS=[ libs ])
