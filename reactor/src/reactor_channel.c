@@ -1,22 +1,22 @@
-#include "osreactor.h"
+#include "reactor.h"
 
 #include <osa/osmemIntf.h>
 
-struct OsReactorChannel
+struct ReactorChannel
 {
   OsNetSocket_t * socket;
   void * userdata;
-  OsReactorChannelHandler_t handler;
+  ReactorChannelHandler_t handler;
 };
 
-Status_e osreactor_channel_create(OsReactorChannel_t ** channel, OsNetSocket_t * socket, OsReactorChannelHandler_t handler, void * userdata)
+Status_e reactor_channel_create(ReactorChannel_t ** channel, OsNetSocket_t * socket, ReactorChannelHandler_t handler, void * userdata)
 {
   Status_e rc = STATUS_FAILURE;
 
   if((channel != NULL) && (socket != NULL) && (handler != NULL))
   {
     const OsMemIntf_t * const memi = getOsMemIntf();
-    *channel = (struct OsReactorChannel *) memi->malloc(sizeof(struct OsReactorChannel));
+    *channel = (struct ReactorChannel *) memi->malloc(sizeof(struct ReactorChannel));
     if(*channel != NULL)
     {
       (*channel)->socket = socket;
@@ -35,7 +35,7 @@ Status_e osreactor_channel_create(OsReactorChannel_t ** channel, OsNetSocket_t *
   return rc;
 }
 
-Status_e osreactor_channel_handle(OsReactorChannelState_e state, const OsReactorChannel_t * const channel)
+Status_e reactor_channel_handle(ReactorChannelState_e state, const ReactorChannel_t * const channel)
 {
   Status_e rc = STATUS_FAILURE;
 
@@ -48,7 +48,7 @@ Status_e osreactor_channel_handle(OsReactorChannelState_e state, const OsReactor
   return rc;
 }
 
-const OsNetSocket_t * osreactor_channel_get_socket(const OsReactorChannel_t * const channel)
+const OsNetSocket_t * reactor_channel_get_socket(const ReactorChannel_t * const channel)
 {
   OsNetSocket_t * rc = NULL;
 
@@ -60,7 +60,7 @@ const OsNetSocket_t * osreactor_channel_get_socket(const OsReactorChannel_t * co
   return rc;
 }
 
-void * osreactor_channel_get_userdata(const OsReactorChannel_t * const channel)
+void * reactor_channel_get_userdata(const ReactorChannel_t * const channel)
 {
   void * rc = NULL;
 
@@ -72,13 +72,13 @@ void * osreactor_channel_get_userdata(const OsReactorChannel_t * const channel)
   return rc;
 }
 
-Status_e osreactor_channel_destroy(OsReactorChannel_t * channel)
+Status_e reactor_channel_destroy(ReactorChannel_t * channel)
 {
   Status_e rc = STATUS_FAILURE;
 
   if(channel != NULL)
   {
-    (void) osreactor_channel_handle(OSREACTORCHANNELSTATE_CLOSE, channel);
+    (void) reactor_channel_handle(REACTORCHANNELSTATE_CLOSE, channel);
     channel->handler = NULL;
     channel->userdata = NULL;
 

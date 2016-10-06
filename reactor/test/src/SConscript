@@ -1,0 +1,28 @@
+Import('env')
+
+src_testlib = [
+  'tcase_reactor_channel.c',
+  'tcase_reactor_reactor.c',
+  'test_reactor_helper.c',
+]
+
+env.Lib('reactor-tests', src_testlib)
+
+env.Lib('reactordefimpl', [ 'test_reactor_defimpl.c' ])
+
+libs = [
+	'reactor-tests',
+	'reactorintf', 'reactor', 'reactordefimpl',
+
+  'osmemintf', 'osmem', 'osmemdefimpl',
+  'osnetintf', 'osnet', 'osnetdefimpl',
+  'osthreadingintf', 'osthreading', 'osthreadingdefimpl',
+  'osepollintf', 'osepoll', 'osepolldefimpl',
+
+  'listintf', 'list', 'listdefimpl',
+]
+
+tests =  env.App('reactor-tests', 'test_reactor.c', LIBS=[ libs ])
+
+env.Alias('unittests', tests)
+env.Alias('reactortests', tests)

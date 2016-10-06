@@ -1,0 +1,15 @@
+Import('env')
+
+src_intf = [
+  'reactorIntf.c',
+]
+
+src_lib = [
+  'reactor_channel.c',
+  'reactor.c',
+]
+
+intf = env.Lib('reactorintf', src_intf)
+lib = env.Lib('reactor', src_lib)
+
+env.Alias('reactor', [ intf, lib ])

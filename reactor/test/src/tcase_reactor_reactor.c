@@ -1,16 +1,16 @@
-#include "test_osreactor_tcases.h"
+#include "test_reactor_tcases.h"
 
 #include <netinet/in.h>
 
 #include <logging/logging.h>
 #include <osa/osmemIntf.h>
 
-#include "test_osreactor_helper.h"
+#include "test_reactor_helper.h"
 
 START_TEST(test_reactor_NULL)
-  const OsReactorIntf_t * const ri = getOsReactorIntf();
-  OsReactor_t * reactor = (OsReactor_t *) 0x12345;
-  OsReactorChannel_t * channel = (OsReactorChannel_t *) 0x12345;
+  const ReactorIntf_t * const ri = getReactorIntf();
+  Reactor_t * reactor = (Reactor_t *) 0x12345;
+  ReactorChannel_t * channel = (ReactorChannel_t *) 0x12345;
 
   ck_assert(ri->reactor_create(NULL) == STATUS_FAILURE);
 
@@ -25,22 +25,22 @@ START_TEST(test_reactor_NULL)
   ck_assert(ri->reactor_destroy(NULL) == STATUS_FAILURE);
 END_TEST
 
-static OsReactor_t * localCreateReactor(void)
+static Reactor_t * localCreateReactor(void)
 {
-  OsReactor_t * rc = NULL;
+  Reactor_t * rc = NULL;
 
-  const OsReactorIntf_t * const ri = getOsReactorIntf();
+  const ReactorIntf_t * const ri = getReactorIntf();
   ck_assert(ri->reactor_create(&rc) == STATUS_SUCCESS);
 
   ck_assert(rc != NULL);
-  return rc;  
+  return rc;
 }
 
-static void localDestroyReactor(OsReactor_t * reactor)
+static void localDestroyReactor(Reactor_t * reactor)
 {
   ck_assert(reactor != NULL);
-  const OsReactorIntf_t * const ri = getOsReactorIntf();
-  ck_assert(ri->reactor_destroy(reactor) == STATUS_SUCCESS);  
+  const ReactorIntf_t * const ri = getReactorIntf();
+  ck_assert(ri->reactor_destroy(reactor) == STATUS_SUCCESS);
 }
 
 START_TEST(test_reactor_create_destroy)
@@ -48,16 +48,16 @@ START_TEST(test_reactor_create_destroy)
 END_TEST
 
 #define BUFFERSIZE  (1024 * 50)
-static void localUdpChannelHandler(OsReactorChannelState_e state, const OsReactorChannel_t * const channel)
+static void localUdpChannelHandler(ReactorChannelState_e state, const ReactorChannel_t * const channel)
 {
-  ck_assert(state != OSREACTORCHANNELSTATE_UNKNOWN);
+  ck_assert(state != REACTORCHANNELSTATE_UNKNOWN);
   ck_assert(channel != NULL);
 
-  const OsReactorIntf_t * const ri = getOsReactorIntf();
+  const ReactorIntf_t * const ri = getReactorIntf();
   const OsNetSocket_t * socket = ri->channel_get_socket(channel);
   void * data = ri->channel_get_userdata(channel);
 
-  if(state == OSREACTORCHANNELSTATE_READ)
+  if(state == REACTORCHANNELSTATE_READ)
   {
     INFO("Socket is ready for reading\n");
     char_t * recv_buffer = (char_t*) data;
@@ -65,11 +65,11 @@ static void localUdpChannelHandler(OsReactorChannelState_e state, const OsReacto
     ck_assert(getOsNetIntf()->socket_recv(socket, recv_buffer, &recv_buffer_size, 0) == STATUS_SUCCESS);
     ck_assert(recv_buffer_size == BUFFERSIZE);
   }
-  else if(state == OSREACTORCHANNELSTATE_WRITE)
+  else if(state == REACTORCHANNELSTATE_WRITE)
   {
     INFO("Socket is ready for writing\n");
   }
-  else if(state == OSREACTORCHANNELSTATE_CLOSE)
+  else if(state == REACTORCHANNELSTATE_CLOSE)
   {
     INFO("Socket is getting closed\n");
   }
@@ -80,9 +80,9 @@ static void localUdpChannelHandler(OsReactorChannelState_e state, const OsReacto
 
 }
 
-static OsReactorChannel_t * localCreateUdpChannel(void * userdata, size_t count)
+static ReactorChannel_t * localCreateUdpChannel(void * userdata, size_t count)
 {
-  OsReactorChannel_t * rc = NULL;
+  ReactorChannel_t * rc = NULL;
   OsNetSocket_t * socket;
 
   const OsNetIntf_t * const neti = getOsNetIntf();
@@ -94,8 +94,8 @@ static OsReactorChannel_t * localCreateUdpChannel(void * userdata, size_t count)
   si_me.sin_addr.s_addr = neti->htonl(INADDR_ANY);
 
   ck_assert(neti->socket_bind(socket, &si_me, sizeof(si_me)) == STATUS_SUCCESS);
-  
-  const OsReactorIntf_t * const ri = getOsReactorIntf();
+
+  const ReactorIntf_t * const ri = getReactorIntf();
   ck_assert(ri->channel_create(&rc, socket, localUdpChannelHandler, userdata) == STATUS_SUCCESS);
 
   ck_assert(rc != NULL);
@@ -103,9 +103,9 @@ static OsReactorChannel_t * localCreateUdpChannel(void * userdata, size_t count)
 }
 
 START_TEST(test_reactor_udpchannel)
-  const OsReactorIntf_t * const ri = getOsReactorIntf();
+  const ReactorIntf_t * const ri = getReactorIntf();
 
-  OsReactor_t * reactor = localCreateReactor();
+  Reactor_t * reactor = localCreateReactor();
 
   const OsMemIntf_t * const memi = getOsMemIntf();
   char_t send_buffer[BUFFERSIZE];
@@ -113,7 +113,7 @@ START_TEST(test_reactor_udpchannel)
   char_t recv_buffer[BUFFERSIZE];
   memi->memset(recv_buffer, 'B', BUFFERSIZE);
 
-  OsReactorChannel_t * channel = localCreateUdpChannel(recv_buffer, 0);
+  ReactorChannel_t * channel = localCreateUdpChannel(recv_buffer, 0);
 
   ck_assert(ri->reactor_channel_register(reactor, channel) == STATUS_SUCCESS);
 
@@ -135,11 +135,11 @@ END_TEST
 #define CHANNELCOUNT  10
 
 START_TEST(test_reactor_udpchannels)
-  const OsReactorIntf_t * const ri = getOsReactorIntf();
+  const ReactorIntf_t * const ri = getReactorIntf();
 
-  OsReactor_t * reactor = localCreateReactor();
+  Reactor_t * reactor = localCreateReactor();
 
-  OsReactorChannel_t * channels[CHANNELCOUNT];
+  ReactorChannel_t * channels[CHANNELCOUNT];
 
   const OsMemIntf_t * const memi = getOsMemIntf();
   char_t send_buffer[CHANNELCOUNT][BUFFERSIZE];
@@ -156,7 +156,7 @@ START_TEST(test_reactor_udpchannels)
   const OsNetIntf_t * const neti = getOsNetIntf();
 
   for(size_t i = 0; i < CHANNELCOUNT; i++)
-  { 
+  {
     struct sockaddr_in si_me;
     si_me.sin_family = AF_INET;
     si_me.sin_port = neti->htons(8888 + i);
@@ -172,12 +172,12 @@ START_TEST(test_reactor_udpchannels)
   localDestroyReactor(reactor);
 END_TEST
 
-TCase * tcase_osreactor_reactor(void)
+TCase * tcase_reactor_reactor(void)
 {
-  TCase *tc = tcase_create("TestCase OsReactorIntf Reactor");
+  TCase *tc = tcase_create("TestCase ReactorIntf Reactor");
   tcase_set_timeout(tc, 10);
   tcase_add_valgrind_fixtures(tc);
-  tcase_add_checked_fixture(tc, test_osreactor_setup, test_osreactor_teardown);
+  tcase_add_checked_fixture(tc, test_reactor_setup, test_reactor_teardown);
 
   tcase_add_test(tc, test_reactor_NULL);
   tcase_add_test(tc, test_reactor_create_destroy);

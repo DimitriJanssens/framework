@@ -1,0 +1,3 @@
+Import('env')
+
+env.Lib('osepolldefimpl', [ 'test_osepoll_defimpl.c' ])

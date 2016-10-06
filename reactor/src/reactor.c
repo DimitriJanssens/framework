@@ -1,23 +1,19 @@
-#include "osreactor.h"
-
-#include <sys/epoll.h>
-#include <errno.h>
-#include <string.h>
-#include <unistd.h>
+#include "reactor.h"
 
 #include <logging/logging.h>
 #include <osa/osmemIntf.h>
 #include <osa/osthreadingIntf.h>
 #include <collection/listIntf.h>
+#include <osa/osepollIntf.h>
 
-struct OsReactor
+struct Reactor
 {
-  enum OsReactorState
+  enum ReactorState
   {
-    OSREACTORSTATE_UNKNOWN = 0,
-    OSREACTORSTATE_START,
-    OSREACTORSTATE_RUN,
-    OSREACTORSTATE_STOP
+    REACTORSTATE_UNKNOWN = 0,
+    REACTORSTATE_START,
+    REACTORSTATE_RUN,
+    REACTORSTATE_STOP
   } state;
   List_t * channels;
   OsThread_t * thread;
@@ -27,30 +23,30 @@ struct OsReactor
 
 static void * localReactorThread(void * data);
 
-Status_e osreactor_reactor_create(OsReactor_t ** reactor)
+Status_e reactor_reactor_create(Reactor_t ** reactor)
 {
   Status_e rc = STATUS_FAILURE;
 
   if(reactor != NULL)
   {
     const OsMemIntf_t * const memi = getOsMemIntf();
-    *reactor = (struct OsReactor *) memi->malloc(sizeof(struct OsReactor));
+    *reactor = (struct Reactor *) memi->malloc(sizeof(struct Reactor));
     if(*reactor != NULL)
     {
       Boolean_e allOk = BOOLEAN_TRUE;
       const ListIntf_t * const listi = getListIntf();
-      if(listi->list_create(&(*reactor)->channels, (ListItemDestructor_t) osreactor_channel_destroy) == STATUS_SUCCESS)
+      if(listi->list_create(&(*reactor)->channels, (ListItemDestructor_t) reactor_channel_destroy) == STATUS_SUCCESS)
       {
         const OsThreadingIntf_t * const thri = getOsThreadingIntf();
         if(thri->mutex_create(&(*reactor)->mutex) == STATUS_SUCCESS)
         {
-          (*reactor)->epollfd = epoll_create1(0);
-          if((*reactor)->epollfd > -1)
+          const OsEpollIntf_t * const epolli = getOsEpollIntf();
+          if(epolli->create(&(*reactor)->epollfd) == STATUS_SUCCESS)
           {
-            (*reactor)->state = OSREACTORSTATE_START;
+            (*reactor)->state = REACTORSTATE_START;
             if(thri->thread_create(&(*reactor)->thread, localReactorThread, *reactor) == STATUS_SUCCESS)
-            {            
-              TRACE("OsReactor started\n");
+            {
+              TRACE("Reactor started\n");
               rc = STATUS_SUCCESS;
             }
             else
@@ -60,13 +56,11 @@ Status_e osreactor_reactor_create(OsReactor_t ** reactor)
 
             if(allOk == BOOLEAN_FALSE)
             {
-              (void) close((*reactor)->epollfd);
+              (void) epolli->close((*reactor)->epollfd);
             }
           }
           else
           {
-            const char_t * error = strerror(errno);
-            ERROR("epoll_create: %s\n", error);
             allOk = BOOLEAN_FALSE;
           }
 
@@ -100,7 +94,7 @@ Status_e osreactor_reactor_create(OsReactor_t ** reactor)
   return rc;
 }
 
-Status_e osreactor_reactor_channel_register(OsReactor_t * reactor, OsReactorChannel_t * channel)
+Status_e reactor_reactor_channel_register(Reactor_t * reactor, ReactorChannel_t * channel)
 {
   Status_e rc = STATUS_FAILURE;
 
@@ -112,20 +106,16 @@ Status_e osreactor_reactor_channel_register(OsReactor_t * reactor, OsReactorChan
       const ListIntf_t * const listi = getListIntf();
       if(listi->item_append(reactor->channels, channel) == STATUS_SUCCESS)
       {
-        int32_t fd = getOsNetIntf()->socket_fd(osreactor_channel_get_socket(channel));
-        struct epoll_event epoll_event;
-        (void) getOsMemIntf()->memset(&epoll_event, 0, sizeof(epoll_event));
-        epoll_event.events = EPOLLIN | EPOLLOUT | EPOLLRDHUP | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET;
-        epoll_event.data.ptr = channel;
-        if(epoll_ctl(reactor->epollfd, EPOLL_CTL_ADD, fd, &epoll_event) == 0)
+        int32_t fd = getOsNetIntf()->socket_fd(reactor_channel_get_socket(channel));
+        OsEpollEvent_t epoll_event;
+        epoll_event.events = OSEPOLLEVENT_IN | OSEPOLLEVENT_OUT | OSEPOLLEVENT_RDHUP | OSEPOLLEVENT_PRI | OSEPOLLEVENT_ERR | OSEPOLLEVENT_HUP | OSEPOLLEVENT_ET;
+        epoll_event.data = channel;
+        if(getOsEpollIntf()->ctl_add(reactor->epollfd, fd, &epoll_event) == STATUS_SUCCESS)
         {
-          rc = STATUS_SUCCESS;    
+          rc = STATUS_SUCCESS;
         }
         else
         {
-          const char_t * error = strerror(errno);
-          ERROR("epoll_ctl: %s\n", error);
-
           (void) listi->item_remove_index(reactor->channels, listi->list_size(reactor->channels) - 1);
         }
       }
@@ -137,7 +127,7 @@ Status_e osreactor_reactor_channel_register(OsReactor_t * reactor, OsReactorChan
   return rc;
 }
 
-Status_e osreactor_reactor_channel_unregister(OsReactor_t * reactor, OsReactorChannel_t * channel)
+Status_e reactor_reactor_channel_unregister(Reactor_t * reactor, ReactorChannel_t * channel)
 {
   Status_e rc = STATUS_FAILURE;
 
@@ -150,19 +140,13 @@ Status_e osreactor_reactor_channel_unregister(OsReactor_t * reactor, OsReactorCh
       size_t size = listi->list_size(reactor->channels);
       for(size_t i = 0; i < size; i++)
       {
-        OsReactorChannel_t * item = (OsReactorChannel_t *) listi->item_lookup_index(reactor->channels, i);
+        ReactorChannel_t * item = (ReactorChannel_t *) listi->item_lookup_index(reactor->channels, i);
         if(channel == item)
         {
-          int32_t fd = getOsNetIntf()->socket_fd(osreactor_channel_get_socket(channel));
-          struct epoll_event epoll_event;
-          if(epoll_ctl(reactor->epollfd, EPOLL_CTL_DEL, fd, &epoll_event) == 0)
+          int32_t fd = getOsNetIntf()->socket_fd(reactor_channel_get_socket(channel));
+          if(getOsEpollIntf()->ctl_del(reactor->epollfd, fd) == STATUS_SUCCESS)
           {
             rc = listi->item_remove_index(reactor->channels, i);
-          }
-          else
-          {
-            const char_t * error = strerror(errno);
-            ERROR("epoll_ctl: %s\n", error);
           }
           break;
         }
@@ -175,13 +159,13 @@ Status_e osreactor_reactor_channel_unregister(OsReactor_t * reactor, OsReactorCh
   return rc;
 }
 
-Status_e osreactor_reactor_destroy(OsReactor_t * reactor)
+Status_e reactor_reactor_destroy(Reactor_t * reactor)
 {
   Status_e rc = STATUS_FAILURE;
 
   if(reactor != NULL)
   {
-    reactor->state = OSREACTORSTATE_STOP;
+    reactor->state = REACTORSTATE_STOP;
 
     const OsThreadingIntf_t * const thri = getOsThreadingIntf();
     if(thri->thread_destroy(reactor->thread) == STATUS_SUCCESS)
@@ -197,11 +181,16 @@ Status_e osreactor_reactor_destroy(OsReactor_t * reactor)
         {
           reactor->channels = NULL;
 
-          const OsMemIntf_t * const memi = getOsMemIntf();
+          const OsEpollIntf_t * const epolli = getOsEpollIntf();
+          if(epolli->close(reactor->epollfd) == STATUS_SUCCESS)
+          {
+            reactor->epollfd = -1;
 
-          memi->free(reactor);
-          
-          rc = STATUS_SUCCESS;
+            const OsMemIntf_t * const memi = getOsMemIntf();
+            memi->free(reactor);
+
+            rc = STATUS_SUCCESS;
+          }
         }
       }
     }
@@ -212,24 +201,23 @@ Status_e osreactor_reactor_destroy(OsReactor_t * reactor)
 
 static void * localReactorThread(void * data)
 {
-  OsReactor_t * reactor = (OsReactor_t *) data;
+  Reactor_t * reactor = (Reactor_t *) data;
 
   if(reactor != NULL)
   {
-    if(reactor->state == OSREACTORSTATE_START)
+    if(reactor->state == REACTORSTATE_START)
     {
-      reactor->state = OSREACTORSTATE_RUN;
+      reactor->state = REACTORSTATE_RUN;
     }
 
-    while(reactor->state == OSREACTORSTATE_RUN)
+    while(reactor->state == REACTORSTATE_RUN)
     {
       const OsThreadingIntf_t * const thri = getOsThreadingIntf();
-     
-      struct epoll_event epoll_event;
-      int32_t nfds = epoll_wait(reactor->epollfd, &epoll_event, 1, 1);
-      if(nfds >= -1)
+
+      OsEpollEvent_t epoll_event;
+      if(getOsEpollIntf()->wait(reactor->epollfd, &epoll_event) == STATUS_SUCCESS)
       {
-        if(nfds > 0)
+        if(!(epoll_event.events & OSEPOLLEVENT_TIMEOUT))
         {
           if(thri->mutex_lock(reactor->mutex) == STATUS_SUCCESS)
           {
@@ -237,35 +225,30 @@ static void * localReactorThread(void * data)
             size_t size = listi->list_size(reactor->channels);
             for(size_t i = 0; i < size; i++)
             {
-              OsReactorChannel_t * channel = (OsReactorChannel_t *) listi->item_lookup_index(reactor->channels, i);
-              if(channel == epoll_event.data.ptr)
+              ReactorChannel_t * channel = (ReactorChannel_t *) listi->item_lookup_index(reactor->channels, i);
+              if(channel == epoll_event.data)
               {
                 // Unlock as soon as we have found our channel. A channel handler might want to unregister the channel.
                 (void) thri->mutex_unlock(reactor->mutex);
 
                 // Check which epoll event has occured
-                if((epoll_event.events & EPOLLIN) || (epoll_event.events & EPOLLPRI))
+                if((epoll_event.events & OSEPOLLEVENT_IN) || (epoll_event.events & OSEPOLLEVENT_PRI))
                 {
-                  (void) osreactor_channel_handle(OSREACTORCHANNELSTATE_READ, channel);
+                  (void) reactor_channel_handle(REACTORCHANNELSTATE_READ, channel);
                 }
-                else if(epoll_event.events & EPOLLOUT)
+                else if(epoll_event.events & OSEPOLLEVENT_OUT)
                 {
-                  (void) osreactor_channel_handle(OSREACTORCHANNELSTATE_WRITE, channel);
+                  (void) reactor_channel_handle(REACTORCHANNELSTATE_WRITE, channel);
                 }
-                else if((epoll_event.events & EPOLLRDHUP) || (epoll_event.events & EPOLLERR) || (epoll_event.events & EPOLLRDHUP))
+                else if((epoll_event.events & OSEPOLLEVENT_RDHUP) || (epoll_event.events & OSEPOLLEVENT_ERR) || (epoll_event.events & OSEPOLLEVENT_RDHUP))
                 {
-                  (void) osreactor_reactor_channel_unregister(reactor, channel);
+                  (void) reactor_reactor_channel_unregister(reactor, channel);
                 }
                 break;
               }
             }
           }
-        }          
-      }
-      else
-      {
-        const char_t * error = strerror(errno);
-        ERROR("epoll wait error: %s\n", error);
+        }
       }
     }
   }

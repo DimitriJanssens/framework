@@ -6,6 +6,7 @@ SUBDIRS = [
   'eventbus',
   'osa',
   'protocols',
+  'reactor',
   'testframework',
   'third-party',
 ]

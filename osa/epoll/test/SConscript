@@ -1,12 +1,7 @@
 Import('env')
 
 SUBDIRS = [
-  'epoll',
-  'mem',
-  'net',
-  'signal',
-  'threading',
-  'utils',
+  'src',
 ]
 
 env.SConscript(dirs=SUBDIRS, name='SConscript', exports = 'env')

@@ -1,0 +1,16 @@
+Import('env')
+
+src_intf = [
+  'osepollIntf.c',
+]
+
+src_lib = [
+  'osepoll_events.c',
+  'osepoll.c',
+]
+
+intf = env.Lib('osepollintf', src_intf)
+lib = env.Lib('osepoll', src_lib)
+
+env.Alias('osepoll', [ intf, lib ])
+env.Alias('osa', [ intf, lib ])
