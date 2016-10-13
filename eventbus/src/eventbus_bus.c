@@ -40,7 +40,7 @@ Status_e eventbus_bus_create(EventBus_t ** bus)
         {
           (*bus)->state = EVENTBUSSTATE_START;
           if(thri->thread_create(&(*bus)->thread, localEventBusThread, *bus) == STATUS_SUCCESS)
-          {            
+          {
             TRACE("EventBus started\n");
             rc = STATUS_SUCCESS;
           }
@@ -126,7 +126,7 @@ Status_e eventbus_bus_destroy(EventBus_t *bus)
           const OsMemIntf_t * const memi = getOsMemIntf();
 
           memi->free(bus);
-          
+
           rc = STATUS_SUCCESS;
         }
       }
@@ -153,19 +153,26 @@ static void * localEventBusThread(void * data)
       if(thri->mutex_lock(bus->mutex) == STATUS_SUCCESS)
       {
         const ListIntf_t * const listi = getListIntf();
-        if(listi->list_size(bus->events) != 0)
+        Event_t *event = (Event_t *) listi->item_lookup_index(bus->events, 0);
+        if(event != NULL)
         {
-          Event_t *event = (Event_t *) listi->item_lookup_index(bus->events, 0);
-          if(event != NULL)
+          /* Unlock as soon as we have found an event.
+           * An event might want to send an event again.
+           */
+          (void) thri->mutex_unlock(bus->mutex);
+          if(getEventBusIntf()->event_handle(event) == STATUS_SUCCESS)
           {
-            if(getEventBusIntf()->event_handle(event) == STATUS_SUCCESS)
+            if(thri->mutex_lock(bus->mutex) == STATUS_SUCCESS)
             {
               (void) listi->item_remove_index(bus->events, 0);
+              (void) thri->mutex_unlock(bus->mutex);
             }
           }
         }
-
-        (void) thri->mutex_unlock(bus->mutex);
+        else
+        {
+          (void) thri->mutex_unlock(bus->mutex);
+        }
       }
 
       (void) thri->thread_yield();
