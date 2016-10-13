@@ -25,10 +25,11 @@ Status_e can_socket_create(OsNetSocket_t ** sckt, const char_t * const ifname)
         {
           rc = STATUS_SUCCESS;
         }
-        else
-        {
-          (void) neti->socket_destroy(*sckt);
-        }
+      }
+
+      if(rc != STATUS_SUCCESS)
+      {
+        (void) neti->socket_destroy(*sckt);
       }
     }
   }
