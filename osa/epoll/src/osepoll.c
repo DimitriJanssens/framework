@@ -60,7 +60,7 @@ Status_e osepoll_wait(int32_t epollfd, OsEpollEvent_t * const event)
   if(event != NULL)
   {
     struct epoll_event epoll_event;
-    int32_t nfds = epoll_wait(epollfd, &epoll_event, 1, 1);
+    int32_t nfds = epoll_wait(epollfd, &epoll_event, 1, 100);
     if(nfds > -1)
     {
       if(nfds == 0)

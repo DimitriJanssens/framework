@@ -1,9 +1,10 @@
 #include "eventbus.h"
 
-#include <osa/osmemIntf.h>
-#include <collection/listIntf.h>
-#include <osa/osthreadingIntf.h>
 #include <logging/logging.h>
+#include <osa/osmemIntf.h>
+#include <osa/osthreadingIntf.h>
+#include <osa/osutilsIntf.h>
+#include <collection/listIntf.h>
 
 struct EventBus
 {
@@ -149,6 +150,9 @@ static void * localEventBusThread(void * data)
 
     while(bus->state == EVENTBUSSTATE_RUN)
     {
+      /*sleep 1ms */
+      (void) getOsUtilsIntf()->sleep_usec(1000);
+
       const OsThreadingIntf_t * const thri = getOsThreadingIntf();
       if(thri->mutex_lock(bus->mutex) == STATUS_SUCCESS)
       {
@@ -174,8 +178,6 @@ static void * localEventBusThread(void * data)
           (void) thri->mutex_unlock(bus->mutex);
         }
       }
-
-      (void) thri->thread_yield();
     }
   }
 
