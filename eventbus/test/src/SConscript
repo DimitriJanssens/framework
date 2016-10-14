@@ -16,6 +16,7 @@ libs = [
 
   'osmemintf', 'osmem', 'osmemdefimpl',
   'osthreadingintf', 'osthreading', 'osthreadingdefimpl',
+  'osutilsintf', 'osutils', 'osutilsdefimpl',
   'listintf', 'list', 'listdefimpl',
 ]
 
