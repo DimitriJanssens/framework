@@ -6,7 +6,7 @@ def App(env, *nargs, **kwargs):
   env.Append(_LIBFLAGS=" -Wl,--end-group")  # the trailing space is required
 
   if env.GetOption('unittests') == True:
-    env['CPPPATH'].append([ env.Dir('%s/check' %(env['INC_DIR'])) ])
+    env['CPPPATH'].append([ env.Dir('%s/check' %(env['THIRD_PARTY_INC_DIR'])) ])
     kwargs.get('LIBS').append([ 'testframework', 'check', 'gcov' ])
 
   for f in kwargs.get('LIBS'):
@@ -23,7 +23,7 @@ def Lib(env, *nargs, **kwargs):
 
   if env.GetOption('unittests') == True:
     env['CPPPATH'].append(env.Dir('../../header').srcnode())
-    env['CPPPATH'].append([ env.Dir('%s/check' %(env['INC_DIR'])) ])
+    env['CPPPATH'].append([ env.Dir('%s/check' %(env['THIRD_PARTY_INC_DIR'])) ])
 
   _lib = env.StaticLibrary(*nargs, **kwargs)
   _lib = env.Install(env['LIB_DIR'], _lib)

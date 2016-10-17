@@ -4,7 +4,7 @@ tarball = env.File('check-0.10.0.tar.gz')
 
 unpack_dir = env.Dir('.')
 
-include_dir = env['INC_DIR'].Dir("check")
+include_dir = env['THIRD_PARTY_INC_DIR'].Dir("check")
 
 target_incs = [
 	include_dir.File('check.h'),

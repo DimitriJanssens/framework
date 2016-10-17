@@ -4,7 +4,7 @@ tarball = env.File('zlog-1.2.12.tar.gz')
 
 unpack_dir = env.Dir('.')
 
-include_dir = env['INC_DIR'].Dir("zlog")
+include_dir = env['THIRD_PARTY_INC_DIR'].Dir("zlog")
 
 target_incs = [
 	include_dir.File('zlog.h'),
