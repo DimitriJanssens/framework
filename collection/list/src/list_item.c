@@ -178,7 +178,7 @@ Status_e list_item_remove_index(List_t *list, size_t index)
 static void localDummyDataDestructor(void * data)
 {
   (void) data;
-  TRACE("LIST: executing dummy data destructor from lookup list\n");
+  DEBUG("LIST: executing dummy data destructor from lookup list\n");
 }
 
 Status_e list_item_lookup_matching(List_t *list, ListItemMatcher_t matcher, List_t ** result)

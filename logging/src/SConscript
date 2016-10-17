@@ -1,0 +1,6 @@
+Import('env')
+
+libstdout = env.Lib('logging-stdout', [ 'logging_stdout.c' ])
+libzlog = env.Lib('logging-zlog', [ 'logging_zlog.c' ])
+
+env.Alias('logging', [ libstdout, libzlog ])

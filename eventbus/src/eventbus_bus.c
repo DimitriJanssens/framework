@@ -42,7 +42,7 @@ Status_e eventbus_bus_create(EventBus_t ** bus)
           (*bus)->state = EVENTBUSSTATE_START;
           if(thri->thread_create(&(*bus)->thread, localEventBusThread, *bus) == STATUS_SUCCESS)
           {
-            TRACE("EventBus started\n");
+            DEBUG("EventBus started\n");
             rc = STATUS_SUCCESS;
           }
           else

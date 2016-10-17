@@ -4,6 +4,7 @@ SUBDIRS = [
   'collection',
   'documentation',
   'eventbus',
+  'logging',
   'osa',
   'protocols',
   'reactor',

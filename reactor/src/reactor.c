@@ -46,7 +46,7 @@ Status_e reactor_reactor_create(Reactor_t ** reactor)
             (*reactor)->state = REACTORSTATE_START;
             if(thri->thread_create(&(*reactor)->thread, localReactorThread, *reactor) == STATUS_SUCCESS)
             {
-              TRACE("Reactor started\n");
+              DEBUG("Reactor started\n");
               rc = STATUS_SUCCESS;
             }
             else
