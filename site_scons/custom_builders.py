@@ -13,7 +13,7 @@ def App(env, *nargs, **kwargs):
     if 'osthreading' in f:
       kwargs.get('LIBS').append(['pthread'])
 
-  _bin = env.Program(*nargs, LIBPATH = env['LIB_DIR'], **kwargs)
+  _bin = env.Program(*nargs, LIBPATH = [ env['LIB_DIR'] , env['THIRD_PARTY_LIB_DIR'] ], **kwargs)
   _bin = env.Install(env['BIN_DIR'], _bin)
   return _bin
 

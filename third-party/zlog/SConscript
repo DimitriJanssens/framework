@@ -11,14 +11,14 @@ target_incs = [
 ]
 
 target_libs = [
-	env['LIB_DIR'].File('libzlog.so'),
+	env['THIRD_PARTY_LIB_DIR'].File('libzlog.so'),
 ]
 
 cmd = env.Command([ target_incs, target_libs ], [ tarball ], [
   Mkdir(unpack_dir),
   '$TAR -xvf $SOURCE -C %s --strip-components=1' %(unpack_dir.path),
-	'cd %s ; CC=%s make PREFIX=%s INSTALL_INCLUDE_PATH=%s INSTALL_LIBRARY_PATH=%s WARNINGS= install' %(unpack_dir.abspath, env['CC'], unpack_dir.abspath, include_dir.abspath, env['LIB_DIR']),
-  'rm %s/libzlog.a' %(env['LIB_DIR']),
+	'cd %s ; CC=%s make PREFIX=%s INSTALL_INCLUDE_PATH=%s INSTALL_LIBRARY_PATH=%s WARNINGS= install' %(unpack_dir.abspath, env['CC'], unpack_dir.abspath, include_dir.abspath, env['THIRD_PARTY_LIB_DIR']),
+  'rm %s/libzlog.a' %(env['THIRD_PARTY_LIB_DIR']),
 	])
 
 # zlog will get unpacked in my do directory. Scons needs to know about this.
