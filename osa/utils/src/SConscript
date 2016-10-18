@@ -5,6 +5,7 @@ src_intf = [
 ]
 
 src_lib = [
+  'osutils_random.c',
   'osutils_sleep.c',
 ]
 

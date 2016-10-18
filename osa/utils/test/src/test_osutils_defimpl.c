@@ -7,6 +7,7 @@ void setDefaultOsUtilsIntfForUnittests(void)
   intf->sleep_sec = osutils_sleep_sec;
   intf->sleep_usec = osutils_sleep_usec;
   intf->sleep_nsec = osutils_sleep_nsec;
+  intf->random = osutils_random;
 }
 
 void resetDefaultOsUtilsIntfForUnittests(void)
@@ -15,5 +16,6 @@ void resetDefaultOsUtilsIntfForUnittests(void)
   intf->sleep_sec = NULL;
   intf->sleep_usec = NULL;
   intf->sleep_nsec = NULL;
+  intf->random = NULL;
 }
 #endif

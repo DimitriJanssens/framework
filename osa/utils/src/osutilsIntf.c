@@ -8,10 +8,12 @@ static OsUtilsIntf_t intf =
   .sleep_sec = osutils_sleep_sec,
   .sleep_usec = osutils_sleep_usec,
   .sleep_nsec = osutils_sleep_nsec,
+  .random = osutils_random,
   #else
   .sleep_sec = NULL,
   .sleep_usec = NULL,
   .sleep_nsec = NULL,
+  .random = NULL,
   #endif
 };
 
