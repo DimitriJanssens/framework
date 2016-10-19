@@ -11,7 +11,7 @@ typedef enum
 {
 	STATUS_UNKNOWN = 0,
 	STATUS_SUCCESS,
-	STATUS_FAILURE	
+	STATUS_FAILURE
 } Status_e;
 
 typedef enum
@@ -20,6 +20,8 @@ typedef enum
   BOOLEAN_TRUE,
   BOOLEAN_FALSE
 } Boolean_e;
+
+#define BOOLEAN_STR(x) (x == BOOLEAN_TRUE ? "true" : x == BOOLEAN_FALSE ? "false" : "unknown")
 
 typedef char char_t;
 
