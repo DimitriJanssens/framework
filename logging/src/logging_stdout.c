@@ -3,7 +3,27 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-static void logging_stdout_info(const char * file, size_t filesz, const char * func, size_t funcsz, long line, const char * format, ...)
+extern const char_t *__progname;
+
+static char_t * logging_stdout_category(const char_t * subcategory, char_t * buffer, size_t buffersize)
+{
+  char_t * rc = NULL;
+
+  if(subcategory == NULL)
+  {
+    snprintf(buffer, buffersize, "%s", __progname);
+    rc = buffer;
+  }
+  else
+  {
+    snprintf(buffer, buffersize, "%s_%s", __progname, subcategory);
+    rc = buffer;
+  }
+
+  return rc;
+}
+
+static void logging_stdout_info(const char_t * subcategory, const char_t * file, size_t filesz, const char_t * func, size_t funcsz, long line, const char_t * format, ...)
 {
   (void) filesz;
   (void) funcsz;
@@ -12,14 +32,17 @@ static void logging_stdout_info(const char * file, size_t filesz, const char * f
   /* initialize valist for num number of arguments */
   va_start(valist, format);
 
-  printf("INFO: %s:%s:%ld: ", file, func, line);
+  char_t category[64] = { 0 };
+  logging_stdout_category(subcategory, category,ARRAY_SIZE(category));
+
+  printf("INFO %s: %s:%s:%ld: ", category, file, func, line);
   vfprintf(stdout, format, valist);
 
   /* clean memory reserved for valist */
   va_end(valist);
 }
 
-static void logging_stdout_error(const char * file, size_t filesz, const char * func, size_t funcsz, long line, const char * format, ...)
+static void logging_stdout_error(const char_t * subcategory, const char_t * file, size_t filesz, const char_t * func, size_t funcsz, long line, const char_t * format, ...)
 {
   (void) filesz;
   (void) funcsz;
@@ -28,14 +51,17 @@ static void logging_stdout_error(const char * file, size_t filesz, const char * 
   /* initialize valist for num number of arguments */
   va_start(valist, format);
 
-  printf("ERROR: %s:%s:%ld: ", file, func, line);
+  char_t category[64] = { 0 };
+  logging_stdout_category(subcategory, category,ARRAY_SIZE(category));
+
+  printf("ERROR %s: %s:%s:%ld: ", category, file, func, line);
   vfprintf(stdout, format, valist);
 
   /* clean memory reserved for valist */
   va_end(valist);
 }
 
-static void logging_stdout_debug(const char * file, size_t filesz, const char * func, size_t funcsz, long line, const char * format, ...)
+static void logging_stdout_debug(const char_t * subcategory, const char_t * file, size_t filesz, const char_t * func, size_t funcsz, long line, const char_t * format, ...)
 {
   (void) filesz;
   (void) funcsz;
@@ -44,7 +70,10 @@ static void logging_stdout_debug(const char * file, size_t filesz, const char * 
   /* initialize valist for num number of arguments */
   va_start(valist, format);
 
-  printf("DEBUG: %s:%s:%ld: ", file, func, line);
+  char_t category[64] = { 0 };
+  logging_stdout_category(subcategory, category,ARRAY_SIZE(category));
+
+  printf("DEBUG %s: %s:%s:%ld: ", category, file, func, line);
   vfprintf(stdout, format, valist);
 
   /* clean memory reserved for valist */
