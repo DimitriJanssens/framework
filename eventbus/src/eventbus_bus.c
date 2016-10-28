@@ -150,9 +150,6 @@ static void * localEventBusThread(void * data)
 
     while(bus->state == EVENTBUSSTATE_RUN)
     {
-      /*sleep 1ms */
-      (void) getOsUtilsIntf()->sleep_usec(1000);
-
       const OsThreadingIntf_t * const thri = getOsThreadingIntf();
       if(thri->mutex_lock(bus->mutex) == STATUS_SUCCESS)
       {
@@ -164,18 +161,20 @@ static void * localEventBusThread(void * data)
            * An event might want to send an event again.
            */
           (void) thri->mutex_unlock(bus->mutex);
-          if(getEventBusIntf()->event_handle(event) == STATUS_SUCCESS)
+          (void) getEventBusIntf()->event_handle(event);
+          if(thri->mutex_lock(bus->mutex) == STATUS_SUCCESS)
           {
-            if(thri->mutex_lock(bus->mutex) == STATUS_SUCCESS)
-            {
-              (void) listi->item_remove_index(bus->events, 0);
-              (void) thri->mutex_unlock(bus->mutex);
-            }
+            (void) listi->item_remove_index(bus->events, 0);
+            (void) thri->mutex_unlock(bus->mutex);
+            /* Reduce processor useage: sleep 1ms */
+            (void) getOsUtilsIntf()->sleep_usec(1000);
           }
         }
         else
         {
           (void) thri->mutex_unlock(bus->mutex);
+          /* Eventbus was empty: sleep 10ms */
+          (void) getOsUtilsIntf()->sleep_usec(10000);
         }
       }
     }
