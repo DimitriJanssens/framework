@@ -108,7 +108,7 @@ Status_e osnet_socket_bind(const OsNetSocket_t * sckt, const void * const addr, 
 
 Status_e osnet_socket_send(const OsNetSocket_t * sckt, const void * const data, size_t * data_size, int32_t flags)
 {
-  Status_e rc = STATUS_SUCCESS;
+  Status_e rc = STATUS_FAILURE;
 
   if((sckt != NULL) && (data != NULL) && (data_size != 0))
   {
@@ -120,12 +120,12 @@ Status_e osnet_socket_send(const OsNetSocket_t * sckt, const void * const data, 
 
 Status_e osnet_socket_sendto(const OsNetSocket_t * sckt, const void * const data, size_t * data_size, int32_t flags, const void * const dest_addr, size_t dest_addr_size)
 {
-  Status_e rc = STATUS_SUCCESS;
+  Status_e rc = STATUS_FAILURE;
 
   if((sckt != NULL) && (data != NULL) && (data_size != 0))
   {
     ssize_t nbytes = -1;
-   
+
     if(dest_addr == NULL)
     {
       nbytes = sendto(sckt->fd, data, *data_size, flags, NULL, 0);
@@ -147,7 +147,7 @@ Status_e osnet_socket_sendto(const OsNetSocket_t * sckt, const void * const data
       {
         *data_size = 0;
 
-        INFO("Socket sendto: %s\n", error);
+        DEBUG("Socket sendto: %s\n", error);
         rc = STATUS_SUCCESS;
       }
       else
@@ -162,7 +162,7 @@ Status_e osnet_socket_sendto(const OsNetSocket_t * sckt, const void * const data
 
 Status_e osnet_socket_recv(const OsNetSocket_t * sckt, void * const data, size_t * data_size, int32_t flags)
 {
-  Status_e rc = STATUS_SUCCESS;
+  Status_e rc = STATUS_FAILURE;
 
   if((sckt != NULL) && (data != NULL) && (data_size != 0))
   {
@@ -174,7 +174,7 @@ Status_e osnet_socket_recv(const OsNetSocket_t * sckt, void * const data, size_t
 
 Status_e osnet_socket_recvfrom(const OsNetSocket_t * sckt, void * const data, size_t * data_size, int32_t flags, void * const src_addr, size_t * const src_addr_size)
 {
-  Status_e rc = STATUS_SUCCESS;
+  Status_e rc = STATUS_FAILURE;
 
   if((sckt != NULL) && (data != NULL) && (data_size != 0))
   {
@@ -201,7 +201,7 @@ Status_e osnet_socket_recvfrom(const OsNetSocket_t * sckt, void * const data, si
       {
         *data_size = 0;
 
-        INFO("Socket recvfrom: %s\n", error);
+        DEBUG("Socket recvfrom: %s\n", error);
         rc = STATUS_SUCCESS;
       }
       else

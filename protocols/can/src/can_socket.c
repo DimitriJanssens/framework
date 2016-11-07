@@ -39,14 +39,14 @@ Status_e can_socket_create(OsNetSocket_t ** sckt, const char_t * const ifname)
 
 Status_e can_socket_write(const OsNetSocket_t * sckt, const CanFrame_t * const frame)
 {
-  Status_e rc = STATUS_SUCCESS;
+  Status_e rc = STATUS_FAILURE;
 
   if((sckt != NULL) && (frame != NULL))
   {
     struct can_frame can_frame;
     can_frame.can_id = frame->canid;
     can_frame.can_dlc = frame->size;
-    if(getOsMemIntf()->memcpy(can_frame.data, frame->data, ARRAY_SIZE(can_frame.data)) == STATUS_SUCCESS)
+    if(getOsMemIntf()->memcpy(can_frame.data, frame->data, sizeof(can_frame.data)) == STATUS_SUCCESS)
     {
       const OsNetIntf_t * const neti = getOsNetIntf();
       size_t can_frame_size = sizeof(can_frame);
@@ -59,21 +59,24 @@ Status_e can_socket_write(const OsNetSocket_t * sckt, const CanFrame_t * const f
 
 Status_e can_socket_read(const OsNetSocket_t * sckt, CanFrame_t * const frame)
 {
-  Status_e rc = STATUS_SUCCESS;
+  Status_e rc = STATUS_FAILURE;
 
   if((sckt != NULL) && (frame != NULL))
   {
     const OsNetIntf_t * const neti = getOsNetIntf();
     struct can_frame can_frame;
     size_t can_frame_size = sizeof(can_frame);
-    if(neti->socket_recv(sckt, &can_frame, &can_frame_size, 0) == STATUS_SUCCESS)
+    if(neti->socket_recv(sckt, &can_frame, &can_frame_size, MSG_DONTWAIT) == STATUS_SUCCESS)
     {
-      if(getOsMemIntf()->memcpy(frame->data, can_frame.data, ARRAY_SIZE(frame->data)) == STATUS_SUCCESS)
+      if(can_frame_size == sizeof(can_frame))
       {
-        frame->canid = can_frame.can_id;
-        frame->size = can_frame.can_dlc;
+        if(getOsMemIntf()->memcpy(frame->data, can_frame.data, sizeof(frame->data)) == STATUS_SUCCESS)
+        {
+          frame->canid = can_frame.can_id;
+          frame->size = can_frame.can_dlc;
 
-        rc = STATUS_SUCCESS;
+          rc = STATUS_SUCCESS;
+        }
       }
     }
   }
