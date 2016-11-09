@@ -1,0 +1,21 @@
+Import('env')
+
+src_testlib = [
+	'tcase_osfile.c',
+  'test_osfile_helper.c',
+]
+
+env.Lib('osfile-tests', src_testlib)
+
+env.Lib('osfiledefimpl', [ 'test_osfile_defimpl.c' ])
+
+libs = [
+	'osfile-tests',
+	'osfileintf', 'osfile', 'osfiledefimpl',
+  'osmemintf', 'osmem', 'osmemdefimpl',
+]
+
+tests =  env.App('osfile-tests', 'test_osfile.c', LIBS=[ libs ])
+
+env.Alias('unittests', tests)
+env.Alias('osfiletests', tests)

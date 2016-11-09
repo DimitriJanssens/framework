@@ -1,0 +1,16 @@
+Import('env')
+
+src_intf = [
+  'osfileIntf.c',
+]
+
+src_lib = [
+  'osfile_mode.c',
+  'osfile.c',
+]
+
+intf = env.Lib('osfileintf', src_intf)
+lib = env.Lib('osfile', src_lib)
+
+env.Alias('osfile', [ intf, lib ])
+env.Alias('osa', [ intf, lib ])
