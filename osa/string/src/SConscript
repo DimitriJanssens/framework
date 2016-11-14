@@ -1,0 +1,15 @@
+Import('env')
+
+src_intf = [
+  'osstringIntf.c',
+]
+
+src_lib = [
+  'osstring.c',
+]
+
+intf = env.Lib('osstringintf', src_intf)
+lib = env.Lib('osstring', src_lib)
+
+env.Alias('osstring', [ intf, lib ])
+env.Alias('osa', [ intf, lib ])

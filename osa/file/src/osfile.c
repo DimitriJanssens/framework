@@ -88,7 +88,8 @@ size_t osfile_write(OsFile_t * const file, const void * const data, size_t size,
       {
         const char_t * error = strerror(errno);
         ERROR("fseek: %s\n", error);
-      }    }
+      }
+    }
   }
 
   return rc;

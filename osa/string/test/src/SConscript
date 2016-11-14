@@ -1,0 +1,21 @@
+Import('env')
+
+src_testlib = [
+	'tcase_osstring.c',
+  'test_osstring_helper.c',
+]
+
+env.Lib('osstring-tests', src_testlib)
+
+env.Lib('osstringdefimpl', [ 'test_osstring_defimpl.c' ])
+
+libs = [
+	'osstring-tests',
+	'osstringintf', 'osstring', 'osstringdefimpl',
+  'osmemintf', 'osmem', 'osmemdefimpl',
+]
+
+tests = env.App('osstring-tests', 'test_osstring.c', LIBS=[ libs ])
+
+env.Alias('unittests', tests)
+env.Alias('osstringtests', tests)
