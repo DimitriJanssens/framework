@@ -7,6 +7,7 @@ src_intf = [
 src_lib = [
   'osutils_random.c',
   'osutils_sleep.c',
+  'osutils_time.c',
 ]
 
 intf = env.Lib('osutilsintf', src_intf)

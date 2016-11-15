@@ -5,10 +5,17 @@
 
 typedef struct
 {
+  uint32_t sec;
+  uint32_t nsec;
+} OsTime_t;
+
+typedef struct
+{
   void (*sleep_sec)(uint32_t seconds);
   void (*sleep_usec)(uint32_t microseconds);
   void (*sleep_nsec)(uint32_t nanoseconds);
   uint32_t (*random)(void);
+  Status_e (*time_now)(OsTime_t * const now);
 } OsUtilsIntf_t;
 
 OsUtilsIntf_t * getOsUtilsIntf(void);

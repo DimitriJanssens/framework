@@ -9,4 +9,6 @@ void osutils_sleep_nsec(uint32_t nanoseconds);
 
 uint32_t osutils_random(void);
 
+Status_e osutils_time_now(OsTime_t * const now);
+
 #endif
