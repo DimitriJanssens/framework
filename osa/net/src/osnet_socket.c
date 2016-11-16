@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <fcntl.h>
 
 #include <osa/osmemIntf.h>
 #include <logging/logging.h>
@@ -59,6 +60,10 @@ Status_e osnet_socket_create(OsNetSocketType_e type, OsNetSocket_t ** sckt)
       {
         s = socket(AF_INET, SOCK_DGRAM, 0);
       }
+      else if(type == OSNETSOCKETTYPE_TCP)
+      {
+        s = socket(AF_INET, SOCK_STREAM, 0);
+      }
       else if(type == OSNETSOCKETTYPE_CAN)
       {
         s = socket(AF_CAN, SOCK_RAW, CAN_RAW);
@@ -72,6 +77,9 @@ Status_e osnet_socket_create(OsNetSocketType_e type, OsNetSocket_t ** sckt)
       else
       {
         memi->free(*sckt);
+
+        const char_t * error = strerror(errno);
+        ERROR("Socket socket: %s\n", error);
       }
     }
   }
@@ -91,6 +99,44 @@ int32_t osnet_socket_fd(const OsNetSocket_t * const sckt)
   return rc;
 }
 
+Status_e osnet_socket_nonblocking(const OsNetSocket_t * const sckt, Boolean_e on)
+{
+  Status_e rc = STATUS_FAILURE;
+
+  if (sckt != NULL)
+  {
+    int32_t flags = fcntl(sckt->fd, F_GETFL, 0);
+    if (flags > -1)
+    {
+      if (on == BOOLEAN_TRUE)
+      {
+        flags |= O_NONBLOCK;
+      }
+      else
+      {
+        flags &= ~O_NONBLOCK;
+      }
+
+      if (fcntl(sckt->fd, F_SETFL, flags) == 0)
+      {
+        rc = STATUS_SUCCESS;
+      }
+      else
+      {
+        const char_t * error = strerror(errno);
+        ERROR("Socket fcntl setflags: %s\n", error);
+      }
+    }
+    else
+    {
+      const char_t * error = strerror(errno);
+      ERROR("Socket fcntl getflags: %s\n", error);
+    }
+  }
+
+  return rc;
+}
+
 Status_e osnet_socket_bind(const OsNetSocket_t * sckt, const void * const addr, size_t addr_size)
 {
   Status_e rc = STATUS_FAILURE;
@@ -100,6 +146,80 @@ Status_e osnet_socket_bind(const OsNetSocket_t * sckt, const void * const addr, 
     if(bind(sckt->fd, (const struct sockaddr *) addr, (socklen_t) addr_size) > -1)
     {
       rc = STATUS_SUCCESS;
+    }
+    else
+    {
+      const char_t * error = strerror(errno);
+      ERROR("Socket bind: %s\n", error);
+    }
+  }
+
+  return rc;
+}
+
+Status_e osnet_socket_connect(const OsNetSocket_t * sckt, const void * const addr, size_t addr_size)
+{
+  Status_e rc = STATUS_FAILURE;
+
+  if((sckt != NULL) && (addr != NULL) && (addr_size > 0))
+  {
+    if(connect(sckt->fd, (const struct sockaddr *) addr, (socklen_t) addr_size) > -1)
+    {
+      rc = STATUS_SUCCESS;
+    }
+    else
+    {
+      const char_t * error = strerror(errno);
+      ERROR("Socket connect: %s\n", error);
+    }
+  }
+
+  return rc;
+}
+
+Status_e osnet_socket_listen(const OsNetSocket_t * sckt, uint16_t maxpendingconnections)
+{
+  Status_e rc = STATUS_FAILURE;
+
+  if(sckt != NULL)
+  {
+    if(listen(sckt->fd, maxpendingconnections) > -1)
+    {
+      rc = STATUS_SUCCESS;
+    }
+    else
+    {
+      const char_t * error = strerror(errno);
+      ERROR("Socket listen: %s\n", error);
+    }
+  }
+
+  return rc;
+}
+
+Status_e osnet_socket_accept(const OsNetSocket_t * sckt, OsNetSocket_t ** newsckt, void * const addr, size_t * const addr_size)
+{
+  Status_e rc = STATUS_FAILURE;
+
+  if((sckt != NULL) && (newsckt != NULL))
+  {
+    const OsMemIntf_t * const memi = getOsMemIntf();
+    *newsckt = (struct OsNetSocket *) memi->malloc(sizeof(struct OsNetSocket));
+    if(*newsckt != NULL)
+    {
+      int fd = accept(sckt->fd, (struct sockaddr *) addr, (socklen_t * const) addr_size);
+      if(fd > -1)
+      {
+        (*newsckt)->fd = fd;
+        rc = STATUS_SUCCESS;
+      }
+      else
+      {
+        const char_t * error = strerror(errno);
+        ERROR("Socket accept: %s\n", error);
+
+        memi->free(*newsckt);
+      }
     }
   }
 

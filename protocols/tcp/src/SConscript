@@ -1,0 +1,15 @@
+Import('env')
+
+src_intf = [
+  'tcpIntf.c',
+]
+
+src_lib = [
+  'tcp_socket.c',
+]
+
+intf = env.Lib('tcpintf', src_intf)
+lib = env.Lib('tcp', src_lib)
+
+env.Alias('tcp', [ intf, lib ])
+env.Alias('protocols', [ intf, lib ])

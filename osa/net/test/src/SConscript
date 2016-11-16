@@ -3,6 +3,7 @@ Import('env')
 src_testlib = [
   'tcase_osnet_socket_can.c',
   'tcase_osnet_socket_interface.c',
+  'tcase_osnet_socket_tcp.c',
   'tcase_osnet_socket_udp.c',
   'tcase_osnet_socket.c',
   'test_osnet_helper.c',

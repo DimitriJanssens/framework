@@ -6,7 +6,11 @@
 Status_e osnet_socket_index_for_interface(const OsNetSocket_t * sckt, const char_t * const ifname, int32_t * const ifindex);
 Status_e osnet_socket_create(OsNetSocketType_e type, OsNetSocket_t ** sckt);
 int32_t osnet_socket_fd(const OsNetSocket_t * const sckt);
-Status_e osnet_socket_bind(const OsNetSocket_t * sckt, const void * const addr, size_t size);
+Status_e osnet_socket_nonblocking(const OsNetSocket_t * const sckt, Boolean_e on);
+Status_e osnet_socket_bind(const OsNetSocket_t * sckt, const void * const addr, size_t addr_size);
+Status_e osnet_socket_connect(const OsNetSocket_t * sckt, const void * const addr, size_t addr_size);
+Status_e osnet_socket_listen(const OsNetSocket_t * sckt, uint16_t maxpendingconnections);
+Status_e osnet_socket_accept(const OsNetSocket_t * sckt, OsNetSocket_t ** newsckt, void * const addr, size_t * const addr_size);
 Status_e osnet_socket_send(const OsNetSocket_t * sckt, const void * const data, size_t * data_size, int32_t flags);
 Status_e osnet_socket_sendto(const OsNetSocket_t * sckt, const void * const data, size_t * data_size, int32_t flags, const void * const dest_addr, size_t dest_addr_size);
 Status_e osnet_socket_recv(const OsNetSocket_t * sckt, void * const data, size_t * data_size, int32_t flags);

@@ -1,8 +1,8 @@
 Import('env')
 
 SUBDIRS = [
-	'can',
-  'tcp',
+	'src',
+  'test',
 ]
 
 env.SConscript(dirs=SUBDIRS, name='SConscript', exports = 'env')

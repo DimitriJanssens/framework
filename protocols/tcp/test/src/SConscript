@@ -1,0 +1,23 @@
+Import('env')
+
+src_testlib = [
+  'tcase_tcp_socket.c',
+  'test_tcp_helper.c',
+]
+
+env.Lib('tcp-tests', src_testlib)
+
+env.Lib('tcpdefimpl', [ 'test_tcp_defimpl.c' ])
+
+libs = [
+	'tcp-tests',
+	'tcpintf', 'tcp',
+
+	'osnetintf', 'osnet', 'osnetdefimpl',
+  'osmemintf', 'osmem', 'osmemdefimpl',
+]
+
+tests =  env.App('tcp-tests', 'test_tcp.c', LIBS=[ libs ])
+
+env.Alias('unittests', tests)
+env.Alias('tcptests', tests)

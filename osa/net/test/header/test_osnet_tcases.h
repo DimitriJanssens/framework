@@ -5,6 +5,7 @@
 
 TCase *tcase_osnet_socket_can(void);
 TCase *tcase_osnet_socket_interface(void);
+TCase *tcase_osnet_socket_tcp(void);
 TCase *tcase_osnet_socket_udp(void);
 TCase *tcase_osnet_socket(void);
 

@@ -39,14 +39,14 @@ START_TEST(test_osnet_socket_udp_create_destroy)
 END_TEST
 
 START_TEST(test_osnet_socket_udp_send_recv)
-  const OsNetIntf_t * const neti = getOsNetIntf(); 
+  const OsNetIntf_t * const neti = getOsNetIntf();
 
   OsNetSocket_t * socket = localUdpSocketCreate();
 
   struct sockaddr_in si_me;
   si_me.sin_family = AF_INET;
-  si_me.sin_port = neti->htons(8888);
-  si_me.sin_addr.s_addr = neti->htonl(INADDR_ANY);
+  si_me.sin_port = neti->host_to_network_short(8888);
+  si_me.sin_addr.s_addr = neti->host_to_network_long(INADDR_ANY);
 
   char_t send_buffer[] = { "DEADBEEF" };
   size_t send_buffer_size = ARRAY_SIZE(send_buffer);
@@ -56,13 +56,13 @@ START_TEST(test_osnet_socket_udp_send_recv)
   ck_assert(neti->socket_bind(socket, &si_me, sizeof(si_me)) == STATUS_SUCCESS);
 
   INFO("BEFORE: send buffer <%s> vs recv buffer <%s>\n", send_buffer, recv_buffer);
-  
+
   ck_assert(neti->socket_sendto(socket, &send_buffer, &send_buffer_size, 0, &si_me, sizeof(si_me)) == STATUS_SUCCESS);
   ck_assert(send_buffer_size == ARRAY_SIZE(send_buffer));
-  
+
   ck_assert(neti->socket_recv(socket, &recv_buffer, &recv_buffer_size, 0) == STATUS_SUCCESS);
   ck_assert(recv_buffer_size == ARRAY_SIZE(recv_buffer));
-  
+
   INFO("AFTER: send buffer <%s> vs recv buffer <%s>\n", send_buffer, recv_buffer);
 
   ck_assert(getOsMemIntf()->memcmp(send_buffer, recv_buffer, ARRAY_SIZE(send_buffer)) == STATUS_SUCCESS);
