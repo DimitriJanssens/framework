@@ -5,7 +5,7 @@
 
 static Status_e list_item_create(ListItem_t ** item, void * data)
 {
-  Status_e rc = STATUS_SUCCESS;
+  Status_e rc = STATUS_FAILURE;
 
   if((item != NULL) && (data != NULL))
   {
