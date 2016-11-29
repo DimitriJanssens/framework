@@ -240,7 +240,7 @@ static void * localReactorThread(void * data)
                 {
                   (void) reactor_channel_handle(REACTORCHANNELSTATE_WRITE, channel);
                 }
-                else if((epoll_event.events & OSEPOLLEVENT_RDHUP) || (epoll_event.events & OSEPOLLEVENT_ERR) || (epoll_event.events & OSEPOLLEVENT_RDHUP))
+                else if((epoll_event.events & OSEPOLLEVENT_ERR) || (epoll_event.events & OSEPOLLEVENT_HUP) || (epoll_event.events & OSEPOLLEVENT_RDHUP))
                 {
                   (void) reactor_reactor_channel_unregister(reactor, channel);
                 }

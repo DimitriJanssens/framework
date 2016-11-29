@@ -90,8 +90,8 @@ static ReactorChannel_t * localCreateUdpChannel(void * userdata, size_t count)
 
   struct sockaddr_in si_me;
   si_me.sin_family = AF_INET;
-  si_me.sin_port = neti->htons(8888 + count);
-  si_me.sin_addr.s_addr = neti->htonl(INADDR_ANY);
+  si_me.sin_port = neti->host_to_network_short(8888 + count);
+  si_me.sin_addr.s_addr = neti->host_to_network_long(INADDR_ANY);
 
   ck_assert(neti->socket_bind(socket, &si_me, sizeof(si_me)) == STATUS_SUCCESS);
 
@@ -120,8 +120,8 @@ START_TEST(test_reactor_udpchannel)
   const OsNetIntf_t * const neti = getOsNetIntf();
   struct sockaddr_in si_me;
   si_me.sin_family = AF_INET;
-  si_me.sin_port = neti->htons(8888);
-  si_me.sin_addr.s_addr = neti->htonl(INADDR_ANY);
+  si_me.sin_port = neti->host_to_network_short(8888);
+  si_me.sin_addr.s_addr = neti->host_to_network_long(INADDR_ANY);
 
   size_t send_buffer_size= BUFFERSIZE;
   ck_assert(neti->socket_sendto(ri->channel_get_socket(channel), send_buffer, &send_buffer_size, 0, &si_me, sizeof(si_me)) == STATUS_SUCCESS);
@@ -159,8 +159,8 @@ START_TEST(test_reactor_udpchannels)
   {
     struct sockaddr_in si_me;
     si_me.sin_family = AF_INET;
-    si_me.sin_port = neti->htons(8888 + i);
-    si_me.sin_addr.s_addr = neti->htonl(INADDR_ANY);
+    si_me.sin_port = neti->host_to_network_short(8888 + i);
+    si_me.sin_addr.s_addr = neti->host_to_network_long(INADDR_ANY);
 
     size_t send_buffer_size = BUFFERSIZE;
     ck_assert(neti->socket_sendto(ri->channel_get_socket(channels[i]), send_buffer[i], &send_buffer_size, 0, &si_me, sizeof(si_me)) == STATUS_SUCCESS);

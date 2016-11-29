@@ -13,6 +13,10 @@ START_TEST(test_NULL)
   ck_assert(si->string_write(buffer, sizeof(buffer), NULL, NULL) == STATUS_FAILURE);
   ck_assert(si->string_write(NULL, sizeof(buffer), NULL, "test") == STATUS_FAILURE);
 
+  ck_assert(si->string_scan(NULL, 0, NULL) == STATUS_FAILURE);
+  ck_assert(si->string_scan(buffer, 0, NULL) == STATUS_FAILURE);
+  ck_assert(si->string_scan(NULL, 0, "test") == STATUS_FAILURE);
+
   ck_assert(si->string_length(NULL) == 0);
 END_TEST
 
@@ -43,6 +47,78 @@ START_TEST(test_string_write_buffertoosmall)
   ck_assert(written != si->string_length(test_string_short));
 END_TEST
 
+START_TEST(test_string_scan_ok)
+  const OsStringIntf_t * const si = getOsStringIntf();
+
+  uint8_t number1 = 0;
+  uint8_t number2 = 0;
+
+  ck_assert(si->string_scan("Number1: 45 and Number2: 0xAA", 2, "Number1: %"SCNu8" and Number2: %"SCNi8"", &number1, &number2) == STATUS_SUCCESS);
+  ck_assert(number1 == 45);
+  ck_assert(number2 == 0xAA);
+
+  uint8_t number3 = 0;
+  ck_assert(si->string_scan("Het getal is 33", 1, "Het    getal    is       %"SCNu8"", &number3) == STATUS_SUCCESS);
+  ck_assert(number3 == 33);
+END_TEST
+
+START_TEST(test_string_scan_conversionrange_max)
+  const OsStringIntf_t * const si = getOsStringIntf();
+
+  uint8_t number1 = 0;
+  uint8_t number2 = 0;
+
+  const char_t * format = "%"SCNu8";%"SCNi8"";
+  const char_t * string = "325;0xAAF";
+
+  ck_assert(si->string_scan(string, 2, format, &number1, &number2) == STATUS_SUCCESS);
+
+  ck_assert_uint_ne(number1, 45);
+  ck_assert_uint_eq(number1, 325 & 0xFF);
+  ck_assert_uint_ne(number2, 0xAA);
+  ck_assert_uint_eq(number2, 0xAAF & 0xFF);
+END_TEST
+
+START_TEST(test_string_scan_conversionrange_min)
+  const OsStringIntf_t * const si = getOsStringIntf();
+
+  uint8_t number1 = 0;
+  uint8_t number2 = 0;
+
+  const char_t * format = "%"SCNu8";%"SCNi8"";
+  const char_t * string = "-5;0xAAF";
+
+  ck_assert(si->string_scan(string, 2, format, &number1, &number2) == STATUS_SUCCESS);
+
+  ck_assert_uint_ne(number1, -5);
+  ck_assert_uint_eq(number1, (uint8_t) -5);
+  ck_assert_uint_ne(number2, 0xAA);
+  ck_assert_uint_eq(number2, 0xAAF & 0xFF);
+END_TEST
+
+START_TEST(test_string_scan_conversionerror_allitems)
+  const OsStringIntf_t * const si = getOsStringIntf();
+
+  uint8_t number1 = 0;
+
+  const char_t * format = "%"SCNi8"";
+  const char_t * string = "HAHA";
+
+  ck_assert(si->string_scan(string, 1, format, &number1) == STATUS_FAILURE);
+END_TEST
+
+START_TEST(test_string_scan_conversionerror_someitems)
+  const OsStringIntf_t * const si = getOsStringIntf();
+
+  uint8_t number1 = 0;
+  uint8_t number2 = 0;
+
+  const char_t * format = "%"SCNu8";%"SCNu8"";
+  const char_t * string = "a;45";
+
+  ck_assert(si->string_scan(string, 2, format, &number1, &number2) == STATUS_FAILURE);
+END_TEST
+
 START_TEST(test_string_length)
 {
   const OsStringIntf_t * const si = getOsStringIntf();
@@ -61,6 +137,11 @@ TCase * tcase_osstring(void)
   tcase_add_test(tc, test_NULL);
   tcase_add_test(tc, test_string_write_ok);
   tcase_add_test(tc, test_string_write_buffertoosmall);
+  tcase_add_test(tc, test_string_scan_ok);
+  tcase_add_test(tc, test_string_scan_conversionrange_max);
+  tcase_add_test(tc, test_string_scan_conversionrange_min);
+  tcase_add_test(tc, test_string_scan_conversionerror_allitems);
+  tcase_add_test(tc, test_string_scan_conversionerror_someitems);
   tcase_add_test(tc, test_string_length);
 
   return tc;
