@@ -16,6 +16,10 @@ def App(env, *nargs, **kwargs):
 
   _bin = env.Program(*nargs, LIBPATH = [ env['LIB_DIR'] , env['THIRD_PARTY_LIB_DIR'] ], **kwargs)
   _bin = env.Install(env['BIN_DIR'], _bin)
+
+  if env.GetOption('target') == 'axotec':
+    env.Depends(nargs, env.Alias('toolchain-axo-gcc-4.9.2-arm'))
+
   return _bin
 
 def Lib(env, *nargs, **kwargs):
@@ -28,4 +32,8 @@ def Lib(env, *nargs, **kwargs):
 
   _lib = env.StaticLibrary(*nargs, **kwargs)
   _lib = env.Install(env['LIB_DIR'], _lib)
+
+  if env.GetOption('target') == 'axotec':
+    env.Depends(nargs, env.Alias('toolchain-axo-gcc-4.9.2-arm'))
+
   return _lib
