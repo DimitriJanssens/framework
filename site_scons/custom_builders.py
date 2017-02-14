@@ -6,8 +6,8 @@ def App(env, *nargs, **kwargs):
   env.Append(_LIBFLAGS=" -Wl,--end-group")  # the leading space is required
 
   if env.GetOption('unittests') == True:
-    env['CPPPATH'].append([ env.Dir('%s/check' %(env['THIRD_PARTY_INC_DIR'])) ])
-    kwargs.get('LIBS').append([ 'testframework', 'check', 'gcov' ])
+    env['CPPPATH'].append(env.Dir('%s/check' %(env['THIRD_PARTY_INC_DIR'])))
+    kwargs.get('LIBS').extend([ 'testframework', 'check', 'gcov' ])
 
   for f in kwargs.get('LIBS'):
     if 'osthreading' in f:
@@ -17,8 +17,7 @@ def App(env, *nargs, **kwargs):
   _bin = env.Program(*nargs, LIBPATH = [ env['LIB_DIR'] , env['THIRD_PARTY_LIB_DIR'] ], **kwargs)
   _bin = env.Install(env['BIN_DIR'], _bin)
 
-  if env.GetOption('target') == 'axotec':
-    env.Depends(nargs, env.Alias('toolchain-axo-gcc-4.9.2-arm'))
+  env.Depends(nargs, env['CC'])
 
   return _bin
 
@@ -28,12 +27,11 @@ def Lib(env, *nargs, **kwargs):
 
   if env.GetOption('unittests') == True:
     env['CPPPATH'].append(env.Dir('../../header').srcnode())
-    env['CPPPATH'].append([ env.Dir('%s/check' %(env['THIRD_PARTY_INC_DIR'])) ])
+    env['CPPPATH'].append(env.Dir('%s/check' %(env['THIRD_PARTY_INC_DIR'])))
 
   _lib = env.StaticLibrary(*nargs, **kwargs)
   _lib = env.Install(env['LIB_DIR'], _lib)
 
-  if env.GetOption('target') == 'axotec':
-    env.Depends(nargs, env.Alias('toolchain-axo-gcc-4.9.2-arm'))
+  env.Depends(nargs, env['CC'])
 
   return _lib
