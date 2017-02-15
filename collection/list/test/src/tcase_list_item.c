@@ -121,7 +121,7 @@ static Status_e localMatchEven(const void * const data)
 
   ck_assert(data != NULL);
 
-  struct matchdata * impl = (struct matchdata *) data;
+  const struct matchdata * const impl = (const struct matchdata * const) data;
   if(impl->count%2 == 0)
   {
     rc = STATUS_SUCCESS;

@@ -36,7 +36,7 @@ END_TEST
 static void localEventHandler(const void * const data)
 {
   ck_assert(data != NULL);
-  int * impl = (int*)data;
+  int * impl = *(int * const * const)(data);
   (*impl)++;
 }
 
@@ -52,9 +52,10 @@ START_TEST(test_bus_create_send_destroy_nowait)
   Event_t * events[EVENTCOUNTER];
 
   int data = 0;
+  int * dataptr = &data;
 
   for(size_t i = 0; i < ARRAY_SIZE(events); i++)
-    ck_assert(ebusi->event_create(&events[i], &data, localEventHandler, localDummyEventDataDestructor) == STATUS_SUCCESS);
+    ck_assert(ebusi->event_create(&events[i], &dataptr, localEventHandler, localDummyEventDataDestructor) == STATUS_SUCCESS);
 
   for(size_t i = 0; i < ARRAY_SIZE(events); i++)
     ck_assert(ebusi->bus_send(bus, events[i]) == STATUS_SUCCESS);
@@ -71,8 +72,10 @@ START_TEST(test_bus_create_send_destroy_wait)
   Event_t * events[EVENTCOUNTER];
 
   int data = 0;
+  int * dataptr = &data;
+
   for(size_t i = 0; i < ARRAY_SIZE(events); i++)
-    ck_assert(ebusi->event_create(&events[i], &data, localEventHandler, localDummyEventDataDestructor) == STATUS_SUCCESS);
+    ck_assert(ebusi->event_create(&events[i], &dataptr, localEventHandler, localDummyEventDataDestructor) == STATUS_SUCCESS);
 
   for(size_t i = 0; i < ARRAY_SIZE(events); i++)
     ck_assert(ebusi->bus_send(bus, events[i]) == STATUS_SUCCESS);

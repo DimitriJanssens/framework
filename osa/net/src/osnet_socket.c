@@ -207,7 +207,7 @@ Status_e osnet_socket_accept(const OsNetSocket_t * sckt, OsNetSocket_t ** newsck
     *newsckt = (struct OsNetSocket *) memi->malloc(sizeof(struct OsNetSocket));
     if(*newsckt != NULL)
     {
-      int fd = accept(sckt->fd, (struct sockaddr *) addr, (socklen_t * const) addr_size);
+      int fd = accept(sckt->fd, (struct sockaddr *) addr, (socklen_t *) addr_size);
       if(fd > -1)
       {
         (*newsckt)->fd = fd;
@@ -252,7 +252,7 @@ Status_e osnet_socket_sendto(const OsNetSocket_t * sckt, const void * const data
     }
     else
     {
-      nbytes = sendto(sckt->fd, data, *data_size, flags, (const struct sockaddr *) dest_addr, dest_addr_size);
+      nbytes = sendto(sckt->fd, data, *data_size, flags, (const struct sockaddr *) dest_addr, (socklen_t) dest_addr_size);
     }
 
     if(nbytes > -1)
@@ -306,7 +306,7 @@ Status_e osnet_socket_recvfrom(const OsNetSocket_t * sckt, void * const data, si
     }
     else
     {
-      nbytes = recvfrom(sckt->fd, data, *data_size, flags, (struct sockaddr *)src_addr, src_addr_size);
+      nbytes = recvfrom(sckt->fd, data, *data_size, flags, (struct sockaddr *)src_addr, (socklen_t *) src_addr_size);
     }
 
     if(nbytes > -1)
