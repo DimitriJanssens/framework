@@ -21,7 +21,4 @@ cmd = env.Command([ target_incs, target_libs ], [ tarball, env['CC'] ], [
   'rm %s/libzlog.a' %(env['THIRD_PARTY_LIB_DIR']),
 	])
 
-# zlog will get unpacked in my do directory. Scons needs to know about this.
-env.SideEffect(unpack_dir.path , cmd)
-
 env.Alias('zlog', cmd)

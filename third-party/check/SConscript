@@ -22,7 +22,4 @@ cmd = env.Command([ target_incs, target_libs ], [ tarball, env['CC'] ], [
 	'cd %s ; ./configure --host=%s --prefix=%s --disable-static --includedir=%s --libdir=%s && make install' %(unpack_dir.abspath, env.File(env['CC']).name.strip('-gcc'), unpack_dir.abspath, include_dir.abspath, env['THIRD_PARTY_LIB_DIR']),
 	])
 
-# check will get unpacked in my do directory. Scons needs to know about this.
-env.SideEffect(unpack_dir.path , cmd)
-
 env.Alias('check', cmd)
