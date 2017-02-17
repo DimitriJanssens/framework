@@ -1,0 +1,6 @@
+Import('env')
+
+jsonintf = env.Lib('jsonintf', [ 'jsonIntf.c' ])
+json_c = env.Lib('json-c', [ 'json-c.c' ])
+
+env.Alias('json', [ jsonintf, json_c ])
