@@ -19,4 +19,16 @@ void _json_array_add(JsonObject_t * obj, JsonObject_t * val);
 size_t _json_array_size(JsonObject_t * obj);
 JsonObject_t * _json_array_get_idx(JsonObject_t * obj, size_t idx);
 
+JsonObject_t * _json_boolean_new(Boolean_e b);
+Boolean_e _json_boolean_get(JsonObject_t * obj);
+
+JsonObject_t * _json_int_new(int64_t i);
+int64_t _json_int_get(JsonObject_t * obj);
+
+JsonObject_t * _json_double_new(double d);
+double _json_double_get(JsonObject_t * obj);
+
+JsonObject_t * _json_string_new(const char_t * s);
+const char_t * _json_string_get(JsonObject_t * obj);
+
 #endif

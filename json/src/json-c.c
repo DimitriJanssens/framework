@@ -137,3 +137,43 @@ JsonObject_t * _json_array_get_idx(JsonObject_t * obj, size_t idx)
 {
   return json_object_array_get_idx(obj, (int) idx);
 }
+
+JsonObject_t * _json_boolean_new(Boolean_e b)
+{
+  return json_object_new_boolean(b == BOOLEAN_TRUE ? TRUE : FALSE);
+}
+
+Boolean_e _json_boolean_get(JsonObject_t * obj)
+{
+  return (json_object_get_boolean(obj) == TRUE ? BOOLEAN_TRUE : BOOLEAN_FALSE);
+}
+
+JsonObject_t * _json_int_new(int64_t i)
+{
+  return json_object_new_int64(i);
+}
+
+int64_t _json_int_get(JsonObject_t * obj)
+{
+  return json_object_get_int64(obj);
+}
+
+JsonObject_t * _json_double_new(double d)
+{
+  return json_object_new_double(d);
+}
+
+double _json_double_get(JsonObject_t * obj)
+{
+  return json_object_get_double(obj);
+}
+
+JsonObject_t * _json_string_new(const char_t * s)
+{
+  return json_object_new_string(s);
+}
+
+const char_t * _json_string_get(JsonObject_t * obj)
+{
+  return json_object_get_string(obj);
+}

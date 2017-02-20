@@ -42,7 +42,7 @@ typedef struct
   JsonObject_t * (*int_new)(int64_t i);
   int64_t (*int_get)(JsonObject_t * obj);
 
-  JsonObject_t * (*double_new)(double i);
+  JsonObject_t * (*double_new)(double d);
   double (*double_get)(JsonObject_t * obj);
 
   JsonObject_t * (*string_new)(const char_t * s);

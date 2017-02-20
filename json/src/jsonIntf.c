@@ -19,6 +19,15 @@ static JsonIntf_t intf =
   .array_add = _json_array_add,
   .array_size = _json_array_size,
   .array_get_idx = _json_array_get_idx,
+
+  .boolean_new = _json_boolean_new,
+  .boolean_get = _json_boolean_get,
+
+  .int_new = _json_int_new,
+  .int_get = _json_int_get,
+
+  .double_new = _json_double_new,
+  .double_get = _json_double_get,
 };
 
 JsonIntf_t * getJsonIntf(void)
