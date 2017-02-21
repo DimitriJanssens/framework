@@ -16,6 +16,7 @@ typedef struct
   void (*sleep_nsec)(uint32_t nanoseconds);
   uint32_t (*random)(void);
   Status_e (*time_now)(OsTime_t * const now);
+  const char_t * (*environ_get)(const char_t * name);
 } OsUtilsIntf_t;
 
 OsUtilsIntf_t * getOsUtilsIntf(void);

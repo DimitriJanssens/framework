@@ -11,4 +11,6 @@ uint32_t osutils_random(void);
 
 Status_e osutils_time_now(OsTime_t * const now);
 
+const char_t * osutils_environ_get(const char_t * name);
+
 #endif

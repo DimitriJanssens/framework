@@ -10,12 +10,14 @@ static OsUtilsIntf_t intf =
   .sleep_nsec = osutils_sleep_nsec,
   .random = osutils_random,
   .time_now = osutils_time_now,
+  .environ_get = osutils_environ_get,
   #else
   .sleep_sec = NULL,
   .sleep_usec = NULL,
   .sleep_nsec = NULL,
   .random = NULL,
   .time_now = NULL,
+  .environ_get = NULL,
   #endif
 };
 

@@ -9,6 +9,7 @@ void setDefaultOsUtilsIntfForUnittests(void)
   intf->sleep_nsec = osutils_sleep_nsec;
   intf->random = osutils_random;
   intf->time_now = osutils_time_now;
+  intf->environ_get = osutils_environ_get;
 }
 
 void resetDefaultOsUtilsIntfForUnittests(void)
@@ -19,5 +20,6 @@ void resetDefaultOsUtilsIntfForUnittests(void)
   intf->sleep_nsec = NULL;
   intf->random = NULL;
   intf->time_now = NULL;
+  intf->environ_get = NULL;
 }
 #endif
