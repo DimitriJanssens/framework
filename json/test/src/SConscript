@@ -1,0 +1,23 @@
+Import('env')
+
+src_testlib = [
+  'tcase_json_arrays.c',
+  'tcase_json_booleans.c',
+  'tcase_json_numbers.c',
+  'tcase_json_objects.c',
+  'tcase_json_strings.c',
+]
+
+env.Lib('json-tests', src_testlib)
+
+env.Lib('jsondefimpl', [ 'test_json_defimpl.c' ])
+
+libs = [
+	'json-tests',
+	'jsonintf', 'jsondefimpl', 'json', 'json-c',
+]
+
+tests =  env.App('json-tests', 'test_json.c', LIBS=[ libs ])
+
+env.Alias('unittests', tests)
+env.Alias('jsontests', tests)

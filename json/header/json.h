@@ -13,6 +13,7 @@ JsonObject_t * _json_object_new(void);
 void _json_object_free(JsonObject_t * obj);
 JsonObject_t * _json_object_copy(JsonObject_t * obj);
 void _json_object_add(JsonObject_t * obj, const char_t * const key, JsonObject_t * val);
+JsonObject_t * _json_object_get(JsonObject_t * obj, const char_t * const key);
 
 JsonObject_t * _json_array_new(void);
 void _json_array_add(JsonObject_t * obj, JsonObject_t * val);

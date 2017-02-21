@@ -30,6 +30,7 @@ typedef struct
   void (*object_free)(JsonObject_t * obj);
   JsonObject_t * (*object_copy)(JsonObject_t * obj);
   void (*object_add)(JsonObject_t * obj, const char_t * const key, JsonObject_t * val);
+  JsonObject_t * (*object_get)(JsonObject_t * obj, const char_t * const key);
 
   JsonObject_t * (*array_new)(void);
   void (*array_add)(JsonObject_t * obj, JsonObject_t * val);
@@ -50,5 +51,10 @@ typedef struct
 } JsonIntf_t;
 
 JsonIntf_t * getJsonIntf(void);
+
+#ifdef UNITTESTS
+void setDefaultJsonIntfForUnittests(void);
+void resetDefaultJsonIntfForUnittests(void);
+#endif
 
 #endif

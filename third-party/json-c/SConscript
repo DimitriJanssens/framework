@@ -7,30 +7,15 @@ unpack_dir = env.Dir('.')
 include_dir = env['THIRD_PARTY_INC_DIR'].Dir('json-c')
 
 target_incs = [
-  include_dir.File('arraylist.h'),
-  include_dir.File('debug.h'),
-  include_dir.File('json_c_version.h'),
-  include_dir.File('json_inttypes.h'),
-  include_dir.File('json_object_iterator.h'),
   include_dir.File('json_tokener.h'),
-  include_dir.File('linkhash.h'),
-  include_dir.File('random_seed.h'),
-  include_dir.File('bits.h'),
-  include_dir.File('json_config.h'),
-  include_dir.File('json.h'),
   include_dir.File('json_object.h'),
-  include_dir.File('json_object_private.h'),
-  include_dir.File('json_util.h'),
-  include_dir.File('printbuf.h')
 ]
 
 target_libs = [
 	env['THIRD_PARTY_LIB_DIR'].File('libjson-c.so'),
 ]
 
-
-cmd = env.Command([ target_incs, target_libs ], [ tarball, env['CC'] ], [
-  Mkdir(unpack_dir),
+cmd = env.Command([ unpack_dir.File('configure'), target_incs, target_libs ], [ tarball, env['CC'] ], [
   '$TAR -xf $SOURCE -C %s --strip-components=1' %(unpack_dir.path),
 	'cd %s ; ./configure --host=%s --prefix=%s --includedir=%s --libdir=%s --disable-static && sed -i s/"missing autoheader"/"missing -v"/ Makefile && make install' %(unpack_dir.abspath, env.File(env['CC']).name.strip('-gcc'), unpack_dir.abspath, env['THIRD_PARTY_INC_DIR'].abspath, env['THIRD_PARTY_LIB_DIR']),
 	])

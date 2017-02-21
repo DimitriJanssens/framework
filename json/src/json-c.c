@@ -118,6 +118,12 @@ void _json_object_add(JsonObject_t * obj, const char_t * const key, JsonObject_t
   json_object_object_add(obj, key, val);
 }
 
+JsonObject_t * _json_object_get(JsonObject_t * obj, const char_t * const key)
+{
+  JsonObject_t * rc = NULL;
+  return (json_object_object_get_ex(obj, key, &rc) == TRUE ? rc : NULL);
+}
+
 JsonObject_t * _json_array_new(void)
 {
   return json_object_new_array();

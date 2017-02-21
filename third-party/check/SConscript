@@ -15,11 +15,9 @@ target_libs = [
 	env['THIRD_PARTY_LIB_DIR'].File('libcheck.so'),
 ]
 
-
-cmd = env.Command([ target_incs, target_libs ], [ tarball, env['CC'] ], [
-  Mkdir(unpack_dir),
-  '$TAR -xvf $SOURCE -C %s --strip-components=1' %(unpack_dir.path),
-	'cd %s ; ./configure --host=%s --prefix=%s --disable-static --includedir=%s --libdir=%s && make install' %(unpack_dir.abspath, env.File(env['CC']).name.strip('-gcc'), unpack_dir.abspath, include_dir.abspath, env['THIRD_PARTY_LIB_DIR']),
+cmd = env.Command([ unpack_dir.File('configure'), target_incs, target_libs ], [ tarball, env['CC'] ], [
+  '$TAR -xf $SOURCE -C %s --strip-components=1' %(unpack_dir.path),
+	'cd %s ; ./configure --host=%s --prefix=%s --disable-static --includedir=%s --libdir=%s && make install' %(unpack_dir.path, env.File(env['CC']).name.strip('-gcc'), unpack_dir.abspath, include_dir.abspath, env['THIRD_PARTY_LIB_DIR']),
 	])
 
 env.Alias('check', cmd)
