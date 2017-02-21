@@ -1,0 +1,16 @@
+Import('env')
+
+tarball = env.File('rsync-3.1.2.tar.gz')
+
+unpack_dir = env.Dir('.')
+
+target_bins = [
+  env['THIRD_PARTY_BIN_DIR'].File('rsync'),
+]
+
+cmd = env.Command([ unpack_dir.File('configure'), target_bins ], [ tarball, env['CC'] ], [
+  '$TAR -xf $SOURCE -C %s --strip-components=1' %(unpack_dir.path),
+	'cd %s ; ./configure --host=%s --prefix=%s --bindir=%s --disable-debug --with-included-popt --with-included-zlib && make install' %(unpack_dir.path, env.File(env['CC']).name.strip('-gcc'), unpack_dir.abspath, env['THIRD_PARTY_BIN_DIR']),
+	])
+
+env.Alias('rsync', cmd)
