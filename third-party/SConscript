@@ -2,6 +2,7 @@ Import('env')
 
 SUBDIRS = [
 	'check',
+  'dropbear',
   'json-c',
   'zlog',
 ]
