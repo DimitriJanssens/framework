@@ -9,6 +9,10 @@ START_TEST(test_NULL)
   const OsStringIntf_t * const si = getOsStringIntf();
   char_t buffer[1];
 
+  ck_assert(si->string_cmp(NULL, NULL, 0) == STATUS_FAILURE);
+  ck_assert(si->string_cmp(buffer, NULL, 0) == STATUS_FAILURE);
+  ck_assert(si->string_cmp(NULL, buffer, 0) == STATUS_FAILURE);
+
   ck_assert(si->string_write(NULL, 0, NULL, NULL) == STATUS_FAILURE);
   ck_assert(si->string_write(buffer, sizeof(buffer), NULL, NULL) == STATUS_FAILURE);
   ck_assert(si->string_write(NULL, sizeof(buffer), NULL, "test") == STATUS_FAILURE);
@@ -22,6 +26,32 @@ END_TEST
 
 static const char_t * test_string_short = "ok";
 static const char_t * test_string_long = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
+START_TEST(test_string_cmp_ok)
+{
+  const OsStringIntf_t * const si = getOsStringIntf();
+
+  char_t buffer[10] = "ok";
+
+  ck_assert(STATUS_SUCCESS == si->string_cmp(test_string_short, buffer, 0));
+  ck_assert(STATUS_SUCCESS == si->string_cmp(buffer, test_string_short, 0));
+
+  ck_assert(STATUS_SUCCESS == si->string_cmp(test_string_short, buffer, 10));
+  ck_assert(STATUS_SUCCESS == si->string_cmp(buffer, test_string_short, 10));
+}
+END_TEST
+
+START_TEST(test_string_cmp_nok)
+{
+  const OsStringIntf_t * const si = getOsStringIntf();
+
+  ck_assert(STATUS_FAILURE == si->string_cmp(test_string_short, test_string_long, 0));
+  ck_assert(STATUS_FAILURE == si->string_cmp(test_string_long, test_string_short, 0));
+
+  ck_assert(STATUS_FAILURE == si->string_cmp(test_string_short, test_string_long, 10));
+  ck_assert(STATUS_FAILURE == si->string_cmp(test_string_long, test_string_short, 10));
+}
+END_TEST
 
 START_TEST(test_string_write_ok)
   const OsStringIntf_t * const si = getOsStringIntf();
@@ -135,6 +165,8 @@ TCase * tcase_osstring(void)
   tcase_add_checked_fixture(tc, test_osstring_setup, test_osstring_teardown);
 
   tcase_add_test(tc, test_NULL);
+  tcase_add_test(tc, test_string_cmp_ok);
+  tcase_add_test(tc, test_string_cmp_nok);
   tcase_add_test(tc, test_string_write_ok);
   tcase_add_test(tc, test_string_write_buffertoosmall);
   tcase_add_test(tc, test_string_scan_ok);

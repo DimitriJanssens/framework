@@ -4,6 +4,7 @@
 void setDefaultOsStringIntfForUnittests(void)
 {
   OsStringIntf_t * intf = getOsStringIntf();
+  intf->string_cmp = osstring_cmp;
   intf->string_write = osstring_write;
   intf->string_scan = osstring_scan;
   intf->string_length = osstring_length;
@@ -12,6 +13,7 @@ void setDefaultOsStringIntfForUnittests(void)
 void resetDefaultOsStringIntfForUnittests(void)
 {
   OsStringIntf_t * intf = getOsStringIntf();
+  intf->string_cmp = NULL;
   intf->string_write = NULL;
   intf->string_scan = NULL;
   intf->string_length = NULL;

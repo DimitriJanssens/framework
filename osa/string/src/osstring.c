@@ -7,6 +7,25 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+Status_e osstring_cmp(const char_t * const s1, const char_t * const s2, size_t n)
+{
+  Status_e rc = STATUS_FAILURE;
+
+  if((s1 != NULL) && (s2 != NULL))
+  {
+    if((n != 0) && (strncmp(s1, s2, n) == 0))
+    {
+      rc = STATUS_SUCCESS;
+    }
+    else if(strcmp(s1, s2) == 0)
+    {
+      rc = STATUS_SUCCESS;
+    }
+  }
+
+  return rc;
+}
+
 Status_e osstring_write(char_t * str, size_t size, size_t * const written, const char_t * format, ...)
 {
   Status_e rc = STATUS_FAILURE;
