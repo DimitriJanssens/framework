@@ -49,6 +49,29 @@ Status_e osfile_open(OsFile_t ** file, const char_t * const path, OsFileMode_e m
   return rc;
 }
 
+size_t osfile_size(OsFile_t * const file, size_t size)
+{
+  size_t rc = 0;
+
+  if((file != NULL) && (size > 0))
+  {
+    if(file->osfile != NULL)
+    {
+      if(fseek(file->osfile, 0, SEEK_END) == 0)
+      {
+        rc = (ftell(file->osfile) / size);
+      }
+      else
+      {
+        const char_t * error = strerror(errno);
+        ERROR("fseek: %s\n", error);
+      }
+    }
+  }
+
+  return rc;
+}
+
 size_t osfile_read(OsFile_t * const file, void * const data, size_t size, size_t nmemb, size_t nmemb_offset)
 {
   size_t rc = 0;

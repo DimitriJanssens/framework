@@ -22,6 +22,11 @@ typedef struct
   Status_e (*file_open)(OsFile_t ** file, const char_t * const path, OsFileMode_e mode);
 
   /*!
+   * \brief Returns the number of elements, each size bytes long, from the file
+   */
+  size_t (*file_size)(OsFile_t * const file, size_t size);
+
+  /*!
    * \brief Reads nmemb elements of data, each size bytes long, from the file, storing them at the location given by ptr.
    */
   size_t (*file_read)(OsFile_t * const file, void * const data, size_t size, size_t nmemb, size_t nmemb_offset);

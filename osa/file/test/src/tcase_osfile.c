@@ -107,6 +107,27 @@ START_TEST(test_open_read_write_close)
   localFileClose(file);
 END_TEST
 
+START_TEST(test_bin_size)
+{
+  const OsFileIntf_t * const fi = getOsFileIntf();
+  size_t nmemb = 5;
+  const uint64_t txData[] = { 5000, 4000, 3000, 2000, 1000 };
+  uint64_t rxData[nmemb];
+
+  OsFile_t * file = localFileOpen("/tmp/osfiletests.test", OSFILEMODE_WPLUS);
+  ck_assert(fi->file_read(file, rxData, sizeof(*rxData), nmemb, 0) == 0);
+  ck_assert(fi->file_write(file, txData, sizeof(*txData), nmemb) == nmemb);
+
+  ck_assert_int_eq(fi->file_size(file, sizeof(*txData)), nmemb);
+
+  ck_assert_int_eq(fi->file_read(file, rxData, sizeof(*rxData), nmemb, 0), nmemb);
+
+  ck_assert(getOsMemIntf()->memcmp(txData, rxData, nmemb) == STATUS_SUCCESS);
+
+  localFileClose(file);
+}
+END_TEST
+
 TCase * tcase_osfile(void)
 {
   TCase *tc = tcase_create("TestCase OsFileIntf");
@@ -119,6 +140,7 @@ TCase * tcase_osfile(void)
   tcase_add_loop_test(tc, test_open_close_modi, OSFILEMODE_UNKNOWN, OSFILEMODE_SIZE);
   tcase_add_test(tc, test_open_read_nonexist);
   tcase_add_test(tc, test_open_read_write_close);
+  tcase_add_test(tc, test_bin_size);
 
   return tc;
 }
