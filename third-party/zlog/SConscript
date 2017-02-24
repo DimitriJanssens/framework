@@ -14,7 +14,7 @@ target_libs = [
 	env['THIRD_PARTY_LIB_DIR'].File('libzlog.so'),
 ]
 
-cmd = env.Command([ unpack_dir.File('configure'), target_incs, target_libs ], [ tarball, env['CC'] ], [
+cmd = env.Command([ unpack_dir.File('makefile'), target_incs, target_libs ], [ tarball, env['CC'] ], [
   '$TAR -xf $SOURCE -C %s --strip-components=1' %(unpack_dir.path),
 	'cd %s ; CC=%s make PREFIX=%s INSTALL_INCLUDE_PATH=%s INSTALL_LIBRARY_PATH=%s WARNINGS= install' %(unpack_dir.abspath, env['CC'], unpack_dir.abspath, include_dir.abspath, env['THIRD_PARTY_LIB_DIR']),
   'rm %s/libzlog.a' %(env['THIRD_PARTY_LIB_DIR']),
