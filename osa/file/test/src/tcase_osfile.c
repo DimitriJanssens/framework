@@ -9,7 +9,7 @@ START_TEST(test_NULL)
   const OsFileIntf_t * const fi = getOsFileIntf();
 
   OsFile_t * file = (OsFile_t *) 0x12345;
-  char_t * path = "test";
+  const char_t * path = "test";
   uint64_t data[] = { 0x1122334455667788};
 
   ck_assert(fi->file_open(NULL, NULL, OSFILEMODE_R) == STATUS_FAILURE);

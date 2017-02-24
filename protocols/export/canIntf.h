@@ -21,7 +21,7 @@ typedef struct
   /* can id + flags */
   uint32_t canid;
   uint8_t data[CAN_FRAMEFORMAT_DATA_SIZE_MAX];
-  size_t size;
+  uint8_t size;
 } CanFrame_t;
 
 typedef struct
