@@ -1,0 +1,35 @@
+Import('env')
+
+# original file was a .zip file
+tarball = env.File('numpy-1.12.0.tar.bz2')
+
+unpack_dir = env.Dir('.')
+
+pythonpath = env['THIRD_PARTY_LIB_DIR'].Dir('python2.7').Dir('site-packages')
+
+print env['CFLAGS']
+
+unpack = env.Command([ unpack_dir.File('setup.py') ], [ tarball ], [
+  '$TAR -xf $SOURCE -C %s --strip-components=1' %(unpack_dir.path),
+	])
+
+build = env.Command([ unpack_dir.File('build/lib.linux-i686-2.7/numpy/setup.py') ], [ unpack, env['CC'] ], [
+	'cd %s ; AR=%s AS=%s CC=%s LDSHARED=\'%s -pthread -shared\' %s/python setup.py build' %(unpack_dir.path, env['AR'].name, env['AS'].name, env['CC'].name, env['CC'].name, env['CC'].Dir('.')),
+	])
+
+install = env.Command([ pythonpath.File('numpy-1.12.0-py2.7-linux-i686.egg/numpy/setup.py') ], [ build ], [
+	'cd %s ; AR=%s AS=%s CC=%s LDSHARED=\'%s -pthread -shared\' PYTHONPATH=%s %s/python setup.py install --prefix %s' %(unpack_dir.path, env['AR'].name, env['AS'].name, env['CC'].name, env['CC'].name, pythonpath, env['CC'].Dir('.'), env['THIRD_PARTY_DIR']),
+	])
+
+# export CC='/usr/local/arm/4.9.2/usr/bin/arm-axotec-linux-gnueabi-gcc'
+# export CXX='/usr/local/arm/4.9.2/usr/bin/arm-axotec-linux-gnueabi-g++'
+# export LD='/usr/local/arm/4.9.2/usr/bin/arm-axotec-linux-gnueabi-ld'
+# export AR='/usr/local/arm/4.9.2/usr/bin/arm-axotec-linux-gnueabi-ar'
+# export STRIP='/usr/local/arm/4.9.2/usr/bin/arm-axotec-linux-gnueabi-strip'
+# export CFLAGS='-march=armv5te'
+# export LDSHARED='/usr/local/arm/4.9.2/usr/bin/arm-axotec-linux-gnueabi-gcc -pthread -shared -L/axoteclinux/Diskimage-4.0.0/rootfs/usr/lib'
+# cd numpy
+# rm -rf build
+# /usr/local/arm/4.9.2/usr/bin/python setup.py build install --prefix ~/workspace/numpy-axotec-build
+
+env.Alias('numpy', install)

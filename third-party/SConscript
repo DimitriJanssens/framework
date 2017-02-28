@@ -4,6 +4,7 @@ SUBDIRS = [
 	'check',
   'dropbear',
   'json-c',
+  'numpy',
   'rsync',
   'zlog',
 ]
