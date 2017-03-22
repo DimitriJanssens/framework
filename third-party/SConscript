@@ -1,10 +1,11 @@
 Import('env')
 
 SUBDIRS = [
-	'check',
+  'check',
   'dropbear',
   'json-c',
   'numpy',
+  'openblas',
   'rsync',
   'zlog',
 ]

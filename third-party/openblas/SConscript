@@ -1,0 +1,27 @@
+Import('env')
+
+# original file was a .zip file
+tarball = env.File('openblas-0.2.19.tar.gz')
+
+unpack_dir = env.Dir('.')
+
+targets = [
+  unpack_dir.File('Makefile'),
+  unpack_dir.File('lib/libopenblas.a'),
+  unpack_dir.File('include/cblas.h'),
+  unpack_dir.File('include/f77blas.h'),
+  unpack_dir.File('include/openblas_config.h'),
+]
+
+if env.GetOption('target') == 'host':
+  cmd = env.Command([ targets], [ tarball, env['CC'] ], [
+    '$TAR -xf %s -C %s --strip-components=1' %(tarball, unpack_dir.path),
+    'cd %s ; CC=$CC.name FC=$FC.name HOSTCC=gcc CROSS=1 CROSS_SUFFIX=%s USE_THREAD=0 NO_LAPACKE=1 NO_SHARED=1 BINARY=32 PREFIX=. make all install' %(unpack_dir.path, env['CC'].name.replace('-gcc', '-')),
+	])
+elif env.GetOption('target') == 'axotec':
+  cmd = env.Command([ targets ], [ tarball, env['CC'] ], [
+    '$TAR -xf %s -C %s --strip-components=1' %(tarball, unpack_dir.path),
+    'cd %s ; CC=$CC.name FC=$FC.name HOSTCC=gcc TARGET=ARMV5 CROSS=1 CROSS_SUFFIX=%s USE_THREAD=0 NO_LAPACKE=1 NO_SHARED=1 BINARY=32 PREFIX=. make all install' %(unpack_dir.path, env['CC'].name.replace('-gcc', '-')),
+	])
+
+env.Alias('openblas', cmd)
