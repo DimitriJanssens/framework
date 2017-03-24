@@ -14,7 +14,7 @@ cmd = env.Command([ unpack_dir.File('setup.py'), site_cfg, bdist ], [ tarball, s
   '$TAR -xf $SOURCE -C %s --strip-components=1' %(unpack_dir.path),
   'cp %s %s' %(site_cfg.srcnode().path, site_cfg.path),
   Mkdir(pythonpath),
-  'cd %s ; F90=$FC.name F77=$FC.name AR=$AR.name AS=$AS.name CC=$CC.name CXX=$CXX.name LDSHARED=$CC.name LDFLAGS=\'-pthread -shared\' RANLIB=$RANLIB.name PYTHONPATH=%s python2.7 setup.py --no-user-cfg build --compiler=unix --fcompiler=gnu95 install --prefix=. bdist_dumb --plat-name=linux-%s --relative' %(unpack_dir.path, pythonpath, env.GetOption('target')),
+  'cd %s ; F90=$FC.name F77=$FC.name AR=$AR.name AS=$AS.name CC=$CC.name CXX=$CXX.name LDSHARED=$FC.name LDFLAGS=\'-pthread -shared -static-libgfortran\' RANLIB=$RANLIB.name PYTHONPATH=%s python2.7 setup.py --no-user-cfg build -j3 --compiler=unix --fcompiler=gnu95 install --prefix=. bdist_dumb --plat-name=linux-%s --relative' %(unpack_dir.path, pythonpath, env.GetOption('target')),
   'cp %s $THIRD_PARTY_DIR.path' %(unpack_dir.Dir('dist').File(bdist.name).path),
 ])
 
