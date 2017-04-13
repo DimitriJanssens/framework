@@ -5,6 +5,15 @@
 
 extern const char_t *__progname;
 
+static Status_e logging_stdout_init(void)
+{
+  return STATUS_SUCCESS;
+}
+
+static void logging_stdout_teardown(void)
+{
+}
+
 static char_t * logging_stdout_category(const char_t * subcategory, char_t * buffer, size_t buffersize)
 {
   char_t * rc = NULL;
@@ -82,8 +91,8 @@ static void logging_stdout_debug(const char_t * subcategory, const char_t * file
 
 static const LoggingIntf_t intf =
 {
-  .init = NULL,
-  .teardown = NULL,
+  .init = logging_stdout_init,
+  .teardown = logging_stdout_teardown,
   .info = logging_stdout_info,
   .error = logging_stdout_error,
   .debug = logging_stdout_debug,
