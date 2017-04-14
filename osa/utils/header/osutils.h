@@ -10,6 +10,8 @@ void osutils_sleep_nsec(uint32_t nanoseconds);
 uint32_t osutils_random(void);
 
 Status_e osutils_time_now(OsTime_t * const now);
+Status_e osutils_date_utc(const OsTime_t * const now, OsDate_t * const date);
+Status_e osutils_date_local(const OsTime_t * const now, OsDate_t * const date);
 
 const char_t * osutils_environ_get(const char_t * name);
 
